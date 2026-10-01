@@ -79,7 +79,7 @@ shared/ui/brand-logo.jsx     # Logo dùng chung
 shared/ui/service-notice.jsx # Hộp thoại cho dịch vụ chưa kết nối
 ```
 
-Form có validation, focus vào trường lỗi, hiện/ẩn mật khẩu và checkbox ghi nhớ. Tham số `?role=employer` chọn nhà tuyển dụng. Chuyển mode/role xóa dữ liệu form. Mật khẩu không được lưu vào localStorage. Login, register, OAuth và gửi email khôi phục **chưa gọi API**; thao tác hợp lệ hiển thị thông báo rõ ràng, không giả lập đăng nhập thành công. Các tiện ích chưa triển khai mở hộp thoại thông báo.
+Form có validation, focus vào trường lỗi, hiện/ẩn mật khẩu và checkbox ghi nhớ. Tham số `?role=employer` chọn nhà tuyển dụng. Chuyển mode/role xóa dữ liệu form. Mật khẩu không được lưu vào localStorage. Login/register ứng viên đã nối API cookie và CSRF. OAuth, tài khoản nhà tuyển dụng và gửi email khôi phục chưa có API. Các tiện ích chưa triển khai mở hộp thoại thông báo.
 
 Kiểm tra trình duyệt (cần Chrome cài trên máy):
 
