@@ -1,11 +1,72 @@
-import { Link } from 'react-router-dom'
-import { MapPin, Phone, Mail } from 'lucide-react'
-import { BrandLogo } from '@/shared/ui/brand-logo'
-import { ServiceNotice } from '@/shared/ui/service-notice'
+import { Link } from "react-router-dom";
+import { MapPin, Phone, Mail } from "lucide-react";
+import { BrandLogo } from "@/shared/ui/brand-logo";
+import { ServiceNotice } from "@/shared/ui/service-notice";
 
-const candidateLinks = ['Tạo CV chuyên nghiệp AI', 'Công cụ tính lương Gross - Net', 'Cẩm nang & Lộ trình nghề nghiệp', 'Báo cáo thị trường tuyển dụng 2026']
-const employerLinks = ['Đăng tin tuyển dụng', 'Tìm hồ sơ ứng viên chuẩn AI', 'Giải pháp Employer Branding', 'Bảng giá dịch vụ tuyển dụng', 'Quy chế xác thực doanh nghiệp']
+const candidateLinks = [
+  "Tạo CV chuyên nghiệp AI",
+  "Công cụ tính lương Gross - Net",
+  "Cẩm nang & Lộ trình nghề nghiệp",
+  "Báo cáo thị trường tuyển dụng 2026",
+];
+const employerLinks = [
+  "Đăng tin tuyển dụng",
+  "Tìm hồ sơ ứng viên chuẩn AI",
+  "Giải pháp Employer Branding",
+  "Bảng giá dịch vụ tuyển dụng",
+  "Quy chế xác thực doanh nghiệp",
+];
 
 export function AuthFooter() {
-  return <footer className="auth-footer"><div className="auth-footer-inner"><div className="footer-columns"><section className="footer-company"><BrandLogo footer /><p>Công ty Cổ phần Job Tốt Toàn Cầu – Nền tảng tuyển dụng thông minh tích hợp trí tuệ nhân tạo (AI) giúp tối ưu hóa hành trình phát triển sự nghiệp của người lao động Việt Nam.</p><address><span><MapPin />Tầng 12, Tòa nhà Sông Đà, Đường Phạm Hùng, Phường Mỹ Đình 1, Quận Nam Từ Liêm, Hà Nội</span><a href="tel:0962107888"><Phone />Hotline 24/7: <strong>0962.107.888</strong></a><a href="mailto:hotro@jobtot.vn"><Mail />Email: <strong>hotro@jobtot.vn</strong></a></address></section><section><h2>Dành cho Ứng viên</h2><Link to="/jobs">Tìm việc làm mới nhất</Link>{candidateLinks.map((label) => <ServiceNotice key={label} title={label}><button>{label}</button></ServiceNotice>)}</section><section><h2>Dành cho Nhà tuyển dụng</h2>{employerLinks.map((label) => <ServiceNotice key={label} title={label}><button>{label}</button></ServiceNotice>)}</section></div><div className="footer-copyright">© 2026 Job Tốt Toàn Cầu</div></div></footer>
+  return (
+    <footer className="min-h-[430px] bg-[#1e293b] text-[#aeb8cb]">
+      <div className="mx-auto max-w-[1284px] px-[34px] pt-16 pb-12 max-[700px]:px-5 max-[700px]:pt-10 max-[700px]:pb-8">
+        <div className="grid grid-cols-[480px_230px_1fr] gap-6 max-[1150px]:grid-cols-[2fr_1fr_1.3fr] max-[950px]:grid-cols-2 max-[950px]:gap-8 max-[700px]:gap-x-4 max-[700px]:gap-y-7 [&>section:not(:first-child)]:flex [&>section:not(:first-child)]:flex-col [&>section:not(:first-child)]:items-start [&>section:not(:first-child)]:gap-[7px] [&_h2]:mb-[7px] [&_h2]:text-[15px] [&_h2]:font-bold [&_h2]:tracking-[0.2px] [&_h2]:text-[#f0f2f6] max-[700px]:[&_h2]:text-[13px] [&>section:not(:first-child)_a]:text-[13px] [&>section:not(:first-child)_button]:text-[13px] [&>section:not(:first-child)_a]:leading-[19px] [&>section:not(:first-child)_button]:leading-[19px] [&_button]:text-left max-[700px]:[&>section:not(:first-child)_a]:text-[11px] max-[700px]:[&>section:not(:first-child)_button]:text-[11px] [&_button:hover]:text-white [&_a:hover]:text-white">
+          <section className="max-[950px]:col-span-full max-[950px]:max-w-[520px] [&>p]:mb-6 [&>p]:text-[13px] [&>p]:leading-[19px] [&_address]:grid [&_address]:gap-2.5 [&_address]:text-[13px] [&_address]:leading-[17px] [&_address]:not-italic [&_address>*]:flex [&_address>*]:items-start [&_address>*]:gap-2 [&_address_strong]:-ml-[5px] [&_address_strong]:font-semibold [&_address_strong]:text-[#d5dce7] [&_address_svg]:size-4 [&_address_svg]:text-auth-orange">
+            <BrandLogo footer />
+            <p>
+              Công ty Cổ phần Job Tốt Toàn Cầu – Nền tảng tuyển dụng thông minh
+              tích hợp trí tuệ nhân tạo (AI) giúp tối ưu hóa hành trình phát
+              triển sự nghiệp của người lao động Việt Nam.
+            </p>
+            <address>
+              <span>
+                <MapPin />
+                Tầng 12, Tòa nhà Sông Đà, Đường Phạm Hùng, Phường Mỹ Đình 1,
+                Quận Nam Từ Liêm, Hà Nội
+              </span>
+              <a href="tel:0962107888">
+                <Phone />
+                Hotline 24/7: <strong>0962.107.888</strong>
+              </a>
+              <a href="mailto:hotro@jobtot.vn">
+                <Mail />
+                Email: <strong>hotro@jobtot.vn</strong>
+              </a>
+            </address>
+          </section>
+          <section>
+            <h2>Dành cho Ứng viên</h2>
+            <Link to="/jobs">Tìm việc làm mới nhất</Link>
+            {candidateLinks.map((label) => (
+              <ServiceNotice key={label} title={label}>
+                <button>{label}</button>
+              </ServiceNotice>
+            ))}
+          </section>
+          <section>
+            <h2>Dành cho Nhà tuyển dụng</h2>
+            {employerLinks.map((label) => (
+              <ServiceNotice key={label} title={label}>
+                <button>{label}</button>
+              </ServiceNotice>
+            ))}
+          </section>
+        </div>
+        <div className="mt-[50px] border-t border-[#344153] pt-7 text-[11px] font-semibold max-[700px]:mt-8">
+          © 2026 Job Tốt Toàn Cầu
+        </div>
+      </div>
+    </footer>
+  );
 }

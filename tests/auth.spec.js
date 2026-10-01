@@ -1,5 +1,23 @@
 import { test, expect } from '@playwright/test'
 
+for (const path of ['/', '/login', '/register']) {
+  test(`restored session skips authentication at ${path}`, async ({ page }) => {
+    const account = { id: 'remembered-candidate', fullName: 'Remembered Candidate', accountType: 'Candidate' }
+    let resolveSession
+    const sessionReady = new Promise(resolve => { resolveSession = resolve })
+    await page.route('**/api/candidate/auth/me', async route => {
+      await sessionReady
+      await route.fulfill({ json: account })
+    })
+    await page.goto(path)
+    await expect(page.getByRole('status')).toHaveText('Đang kiểm tra phiên đăng nhập…')
+    await expect(page.locator('#password')).toHaveCount(0)
+    resolveSession()
+    await expect(page).toHaveURL(/\/jobs$/)
+    await expect(page.getByText(`Xin chào, ${account.fullName}`)).toBeVisible()
+  })
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/candidate/auth/me', route => route.fulfill({ status: 401 }))
   await page.route('**/api/candidate/auth/csrf', route => route.fulfill({ json: { token: 'test-csrf', headerName: 'X-CSRF-TOKEN' } }))

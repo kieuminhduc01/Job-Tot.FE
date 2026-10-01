@@ -69,7 +69,6 @@ features/authenticate/
   ui/auth-panel.jsx          # Chọn loại tài khoản, chuyển đăng nhập/đăng ký
   ui/credentials-form.jsx    # State và submit biểu mẫu
   ui/auth-field.jsx          # Label, input, lỗi, hiện/ẩn mật khẩu
-  ui/social-auth-buttons.jsx
   ui/forgot-password-dialog.jsx
 widgets/auth-header/         # Header và điều hướng
 widgets/auth-introduction/   # Giới thiệu, số liệu, quyền lợi, đánh giá
@@ -79,7 +78,7 @@ shared/ui/brand-logo.jsx     # Logo dùng chung
 shared/ui/service-notice.jsx # Hộp thoại cho dịch vụ chưa kết nối
 ```
 
-Form có validation, focus vào trường lỗi, hiện/ẩn mật khẩu và checkbox ghi nhớ. Tham số `?role=employer` chọn nhà tuyển dụng. Chuyển mode/role xóa dữ liệu form. Mật khẩu không được lưu vào localStorage. Login/register ứng viên đã nối API cookie và CSRF. OAuth, tài khoản nhà tuyển dụng và gửi email khôi phục chưa có API. Các tiện ích chưa triển khai mở hộp thoại thông báo.
+Form có validation, focus vào trường lỗi, hiện/ẩn mật khẩu và checkbox ghi nhớ. Tham số `?role=employer` chọn nhà tuyển dụng. Chuyển mode/role xóa dữ liệu form. Mật khẩu không được lưu vào localStorage. Login/register ứng viên đã nối API cookie và CSRF. Tài khoản nhà tuyển dụng và gửi email khôi phục chưa có API. Các tiện ích chưa triển khai mở hộp thoại thông báo.
 
 Kiểm tra trình duyệt (cần Chrome cài trên máy):
 
@@ -113,4 +112,10 @@ Chạy backend tại `http://localhost:5049` theo `../BE/JobTot/docs/candidate-a
 
 Production cần reverse proxy `/api` tới backend, hoặc đặt `VITE_API_BASE_URL` trước khi build (ví dụ `https://api.example.com`, không gồm `/api`). Với origin riêng, cấu hình CORS backend cho đúng origin frontend, cho phép credentials và dùng cùng site/HTTPS.
 
-API nhà tuyển dụng, đăng nhập mạng xã hội và khôi phục mật khẩu chưa được triển khai. Kiểm thử giao diện dùng API giả lập: `npm run test:e2e`.
+Đăng ký/đăng nhập chỉ hỗ trợ email hoặc số điện thoại và mật khẩu.
+
+API nhà tuyển dụng và khôi phục mật khẩu chưa được triển khai. Kiểm thử giao diện dùng API giả lập: `npm run test:e2e`.
+
+## Quy ước giao diện
+
+Toàn bộ component dùng utility class Tailwind trong `className`. Không tạo stylesheet riêng cho page/component. `src/app/styles/index.css` là CSS đầu vào cho Tailwind v4, font, theme tokens và base styles dùng chung. Màu trang xác thực dùng `auth-orange`, `auth-ink`, `auth-muted`, `auth-border`; các class động phải viết đầy đủ để Tailwind quét được. File `dist/assets/*.css` được sinh khi build, không sửa trực tiếp.

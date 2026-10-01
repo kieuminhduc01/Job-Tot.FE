@@ -1,7 +1,31 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-500.css";
+@import "@fontsource/inter/latin-600.css";
+@import "@fontsource/inter/latin-700.css";
+@import "@fontsource/inter/latin-800.css";
+@import "@fontsource/inter/vietnamese-400.css";
+@import "@fontsource/inter/vietnamese-500.css";
+@import "@fontsource/inter/vietnamese-600.css";
+@import "@fontsource/inter/vietnamese-700.css";
+@import "@fontsource/inter/vietnamese-800.css";
+@import "@fontsource/roboto/latin-400.css";
+@import "@fontsource/roboto/latin-500.css";
+@import "@fontsource/roboto/latin-700.css";
+@import "@fontsource/roboto/latin-400-italic.css";
+@import "@fontsource/roboto/vietnamese-400.css";
+@import "@fontsource/roboto/vietnamese-500.css";
+@import "@fontsource/roboto/vietnamese-700.css";
+@import "@fontsource/roboto/vietnamese-400-italic.css";
 
 @theme inline {
+  --font-inter: "Inter", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --color-auth-orange: #ff571b;
+  --color-auth-ink: #102235;
+  --color-auth-muted: #66718a;
+  --color-auth-border: #e2e9f2;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -27,7 +51,7 @@
 }
 
 :root {
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
   --background: #fafcfb;
   --foreground: #172e25;
   --card: #ffffff;
@@ -38,8 +62,20 @@
 }
 
 @layer base {
-  * { @apply border-border outline-ring/50; }
-  body { @apply m-0 bg-background text-foreground; min-width: 320px; }
-  button, a, input, select { @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring; }
-  button:not(:disabled), select { cursor: pointer; }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply m-0 min-w-80 bg-background text-foreground;
+  }
+  button,
+  a,
+  input,
+  select {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring;
+  }
+  button:not(:disabled),
+  select {
+    @apply cursor-pointer;
+  }
 }

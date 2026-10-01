@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext } from "react";
 
-export const SessionContext = createContext(null)
-export const useCandidateSession = () => useContext(SessionContext)
+export const SessionContext = createContext(null);
+export const useCandidateSession = () => useContext(SessionContext);

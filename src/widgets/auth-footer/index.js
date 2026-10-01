@@ -1,1 +1,1 @@
-export { AuthFooter } from './ui/auth-footer'
+export { AuthFooter } from "./ui/auth-footer";
