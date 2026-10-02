@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { candidateAuth } from "../api/candidate-auth";
 import {
   Dialog,
   DialogContent,
@@ -13,10 +14,13 @@ import { Button } from "@/shared/ui/button";
 
 export function ForgotPasswordDialog() {
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [pending, setPending] = useState(false);
+  const submitting = useRef(false);
   return (
     <Dialog onOpenChange={() => setMessage("")}>
       <DialogTrigger asChild>
-        <button type="button" className="text-[13px] font-bold text-[#FF571B]">
+        <button type="button" className="text-xs font-bold text-auth-orange">
           Quên mật khẩu?
         </button>
       </DialogTrigger>
@@ -29,11 +33,22 @@ export function ForgotPasswordDialog() {
         </DialogHeader>
         <form
           className="grid gap-4"
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
-            setMessage(
-              "Chức năng gửi email khôi phục chưa được kết nối. Chưa có email nào được gửi.",
-            );
+            event.stopPropagation();
+            if (submitting.current) return;
+            submitting.current = true;
+            setPending(true);
+            setMessage("");
+            try {
+              const result = await candidateAuth.forgotPassword(email.trim());
+              setMessage(result.message);
+            } catch (failure) {
+              setMessage(failure.message);
+            } finally {
+              submitting.current = false;
+              setPending(false);
+            }
           }}
         >
           <Label htmlFor="recovery-email">Email</Label>
@@ -42,10 +57,13 @@ export function ForgotPasswordDialog() {
             type="email"
             autoComplete="email"
             required
+            maxLength={320}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             placeholder="email@example.com"
           />
-          <Button className="border-0 bg-[#ff571b] text-white hover:bg-[#ed4710]">
-            Gửi yêu cầu khôi phục
+          <Button type="submit" disabled={pending} className="border-0 bg-auth-orange text-white hover:bg-auth-brand-hover">
+            {pending ? "Đang gửi…" : "Gửi yêu cầu khôi phục"}
           </Button>
           {message && (
             <p role="status" className="text-sm text-muted-foreground">

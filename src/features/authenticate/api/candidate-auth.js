@@ -1,13 +1,11 @@
-const base = `${(import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "")}/api/candidate/auth`;
+import { candidateFetch, saveTokens, readTokens, clearTokens } from "@/shared/api/candidate-session";
 
-async function request(path, options = {}) {
+async function request(path, options = {}, authenticated = false) {
   let response;
   try {
-    response = await fetch(`${base}${path}`, {
-      ...options,
-      credentials: "include",
-    });
-  } catch {
+    response = await candidateFetch(`auth${path}`, options, { authenticated });
+  } catch (failure) {
+    if (failure.status) throw failure;
     throw new Error("Không thể kết nối máy chủ. Vui lòng thử lại.");
   }
   const data = await response.json().catch(() => null);
@@ -42,22 +40,33 @@ async function request(path, options = {}) {
 }
 
 async function post(path, body) {
-  const csrf = await request("/csrf");
-  if (!csrf?.token || !csrf?.headerName)
-    throw new Error("Không lấy được mã xác thực yêu cầu. Vui lòng thử lại.");
   return request(path, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      [csrf.headerName]: csrf.token,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
+async function authenticate(path, values) {
+  const session = await post(path, values);
+  saveTokens(session, path === "/login" && values.rememberMe);
+  return session;
+}
+
 export const candidateAuth = {
-  me: () => request("/me"),
-  login: (values) => post("/login", values),
-  register: (values) => post("/register", values),
-  logout: () => post("/logout", {}),
+  me: () => request("/me", {}, true),
+  login: values => authenticate("/login", values),
+  register: values => authenticate("/register", values),
+  logout: async () => {
+    const tokens = readTokens();
+    // Clearing first prevents in-flight requests from restoring a logged-out session.
+    clearTokens();
+    if (tokens) await post("/logout", { refreshToken: tokens.refreshToken });
+  },
+  forgotPassword: email => post("/forgot-password", { email }),
+  resetPassword: async values => {
+    const result = await post("/reset-password", values);
+    clearTokens();
+    return result;
+  },
 };

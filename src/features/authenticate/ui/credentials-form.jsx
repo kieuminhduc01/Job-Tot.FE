@@ -64,7 +64,7 @@ export function CredentialsForm({ mode, role }) {
             confirmPassword: values.confirmPassword,
           })
         : await candidateAuth.login({ ...body, rememberMe: remember });
-      signIn(session.account);
+      signIn(session.account, { rememberMe: !register && remember });
       navigate("/jobs", { replace: true });
     } catch (failure) {
       setErrors(failure.fields || {});
@@ -131,13 +131,13 @@ export function CredentialsForm({ mode, role }) {
         <div className="mt-1 flex items-center gap-2">
           <Checkbox
             id="remember"
-            className="size-4 rounded-[3px] border-[#ff571b] shadow-none data-[state=checked]:border-[#ff571b] data-[state=checked]:bg-[#ff571b] data-[state=checked]:text-white"
+            className="size-4 rounded-[3px] border-auth-orange shadow-none data-[state=checked]:border-auth-orange data-[state=checked]:bg-auth-orange data-[state=checked]:text-white"
             checked={remember}
             onCheckedChange={setRemember}
           />
           <Label
             htmlFor="remember"
-            className="text-xs font-normal leading-[18px] text-[#737d92]"
+            className="text-xs font-normal leading-[18px] text-auth-text-caption"
           >
             Ghi nhớ đăng nhập trên thiết bị này
           </Label>
@@ -146,7 +146,7 @@ export function CredentialsForm({ mode, role }) {
       <Button
         type="submit"
         disabled={pending}
-        className={`w-full gap-[7px] border-0 bg-[#ff571b] text-base font-bold text-white hover:bg-[#ed4710] max-[950px]:text-sm [&_svg]:size-[19px] ${register ? "-mt-1 h-[52px] rounded-xl" : "mt-0 h-12 rounded-lg"}`}
+        className={`w-full gap-[7px] border-0 bg-auth-orange text-base font-bold text-white hover:bg-auth-brand-hover max-[950px]:text-sm [&_svg]:size-[19px] ${register ? "-mt-1 h-[52px] rounded-xl" : "mt-0 h-12 rounded-lg"}`}
       >
         {pending
           ? "Đang xử lý…"
@@ -158,7 +158,7 @@ export function CredentialsForm({ mode, role }) {
       {message && (
         <p
           role="status"
-          className="rounded-lg bg-[#fff4ed] p-3 text-xs text-[#944519]"
+          className="rounded-lg bg-auth-warning-surface p-3 text-xs text-auth-warning-text"
         >
           {message}
         </p>

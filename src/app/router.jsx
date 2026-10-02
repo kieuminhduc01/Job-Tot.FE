@@ -2,11 +2,17 @@ import { createBrowserRouter, Navigate, Link } from "react-router-dom";
 import { JobsPage } from "@/pages/jobs";
 import { RootLayout } from "./root-layout";
 import { AuthPage } from "@/pages/auth";
+import { ResetPasswordPage } from "@/pages/auth";
+import { ProfilePage } from "@/pages/profile";
+import { CompaniesPage } from "@/pages/companies";
 
 export const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/register" replace /> },
   { path: "/register", element: <AuthPage mode="register" /> },
   { path: "/login", element: <AuthPage mode="login" /> },
+  { path: "/reset-password", element: <ResetPasswordPage /> },
+  { path: "/profile", element: <ProfilePage /> },
+  { path: "/companies", element: <CompaniesPage /> },
   {
     element: <RootLayout />,
     children: [

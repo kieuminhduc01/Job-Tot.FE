@@ -1,0 +1,3 @@
+.profile-breadcrumb{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;color:#8590a5;font-size:13px}
+.profile-breadcrumb strong{color:#475569}
+@media(max-width:800px){.profile-breadcrumb .talent-banner{display:none}}

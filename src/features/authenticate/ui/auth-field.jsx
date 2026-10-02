@@ -19,22 +19,22 @@ export function AuthField({
       <div className={`flex min-h-4 items-center justify-between gap-2 mb-1`}>
         <Label
           htmlFor={name}
-          className={`gap-[3px] text-[#66718a] normal-case leading-4 text-xs font-semibold`}
+          className={`gap-[3px] text-auth-muted normal-case text-base`}
         >
-          {label} <span className="text-[#ff571b]">*</span>
+          {label} <span className="text-auth-orange">*</span>
         </Label>
         {trailing}
       </div>
       <div className="relative">
         <Icon
-          className={`pointer-events-none absolute left-[13px] size-[19px] text-[#6a748a] top-[13px]`}
+          className={`pointer-events-none absolute left-[13px] size-[19px] text-auth-text-icon top-[13px]`}
           aria-hidden="true"
         />
         <Input
           id={name}
           name={name}
           type={password && !visible ? "password" : "text"}
-          className={`px-[38px] py-2.5 text-sm text-[#28384f] shadow-[inset_0_1px_2px_#10223504] h-[43px] rounded-lg border border-[#d7dfda] bg-[#F8FAFC] pl-11 placeholder:text-[#8995ab] dark:bg-[#F8FAFC] ${name === "confirmPassword" ? "pr-[33px] text-[13px] md:text-[13px]" : ""}`}
+          className={`px-[38px] py-2.5 text-sm text-auth-text-input shadow-[inset_0_1px_2px_var(--color-auth-shadow-inset)] h-[43px] rounded-lg border border-input bg-auth-surface-input pl-11 placeholder:text-auth-text-placeholder dark:bg-auth-surface-input ${name === "confirmPassword" ? "pr-[33px] text-base md:text-base" : ""}`}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${name}-error` : undefined}
           {...props}
@@ -44,7 +44,7 @@ export function AuthField({
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-[5px] h-9 w-[34px] text-[#6a748a] [&_svg]:size-[18px]"
+            className="absolute right-1 top-[5px] h-9 w-[34px] text-auth-text-icon [&_svg]:size-[18px]"
             aria-label={
               visible
                 ? `Ẩn ${label.toLowerCase()}`
@@ -58,7 +58,7 @@ export function AuthField({
         )}
       </div>
       {error && (
-        <p className="mt-[5px] text-[11px] text-[#c32a21]" id={`${name}-error`}>
+        <p className="mt-[5px] text-xs text-auth-error" id={`${name}-error`}>
           {error}
         </p>
       )}

@@ -41,8 +41,10 @@ export function SiteHeader() {
           className="flex gap-6 text-sm font-medium"
         >
           {[
+            ["/companies", "Doanh nghiệp"],
             ["/jobs", "Khám phá việc làm"],
             ["/saved-jobs", "Việc làm đã lưu"],
+            ["/profile", "Hồ sơ cá nhân"],
           ].map(([to, label]) => (
             <NavLink
               key={to}
