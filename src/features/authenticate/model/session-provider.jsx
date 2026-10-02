@@ -1,32 +1,66 @@
-import { useEffect, useRef, useState } from 'react'
-import { candidateAuth } from '../api/candidate-auth'
-import { SessionContext } from './session-context'
+import { useEffect, useRef, useState } from "react";
+import { candidateAuth } from "../api/candidate-auth";
+import { clearTokens } from "@/shared/api/candidate-session";
+import { SessionContext } from "./session-context";
 
 export function SessionProvider({ children }) {
-  const [account, setAccount] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const version = useRef(0)
+  const [account, setAccount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const version = useRef(0);
+  const restore = useRef(null);
   useEffect(() => {
-    let active = true
-    const current = version.current
-    candidateAuth.me().then((value) => {
-      if (active && current === version.current) setAccount(value)
-    }).catch((failure) => {
-      if (active && current === version.current && failure.status !== 401) setError(failure.message)
-    }).finally(() => { if (active) setLoading(false) })
-    return () => { active = false }
-  }, [])
+    let active = true;
+    const current = version.current;
+    restore.current ??= candidateAuth.me();
+    restore.current
+      .then((value) => {
+        if (active && current === version.current) setAccount(value);
+      })
+      .catch((failure) => {
+        if (active && current === version.current && failure.status !== 401)
+          setError(failure.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   function signIn(value) {
-    version.current += 1
-    setAccount(value)
-    setError('')
+    if (!value) clearTokens();
+    version.current += 1;
+    setAccount(value);
+    setError("");
+    setLoading(false);
   }
+  useEffect(() => {
+    const ended = () => {
+      version.current += 1;
+      setAccount(null);
+      setError("");
+      setLoading(false);
+    };
+    const changed = event => {
+      if (event.key === "jobtot.candidate.tokens" && !event.newValue) ended();
+    };
+    window.addEventListener("candidate-session-ended", ended);
+    window.addEventListener("storage", changed);
+    return () => {
+      window.removeEventListener("candidate-session-ended", ended);
+      window.removeEventListener("storage", changed);
+    };
+  }, []);
   async function signOut() {
-    try { await candidateAuth.logout() } catch (failure) {
-      if (failure.status !== 401) throw failure
-    }
-    signIn(null)
+    try { await candidateAuth.logout(); }
+    finally { signIn(null); }
   }
-  return <SessionContext.Provider value={{ account, loading, error, signIn, signOut }}>{children}</SessionContext.Provider>
+  return (
+    <SessionContext.Provider
+      value={{ account, loading, error, signIn, signOut }}
+    >
+      {children}
+    </SessionContext.Provider>
+  );
 }

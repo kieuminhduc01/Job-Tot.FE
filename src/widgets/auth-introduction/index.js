@@ -1,1 +1,1 @@
-export { AuthIntroduction } from './ui/auth-introduction'
+export { AuthIntroduction } from "./ui/auth-introduction";
