@@ -1,0 +1,34 @@
+/* Keep the Companies appearance independent of the surrounding page styles. */
+.career-tools.career-tools {
+  width: 100%;
+  max-width: 1184px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.career-tools.career-tools h2 {
+  color: #334155;
+}
+
+.career-tools.career-tools svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.career-tools.career-tools button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.career-tools.career-tools button:focus-visible {
+  outline: 3px solid #ffad8b;
+  outline-offset: 3px;
+}

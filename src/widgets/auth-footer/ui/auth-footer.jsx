@@ -19,7 +19,7 @@ const employerLinks = [
 
 export function AuthFooter() {
   return (
-    <footer className="min-h-[430px] bg-auth-surface-footer text-auth-text-footer">
+    <footer className="site-footer min-h-[430px] bg-auth-surface-footer text-auth-text-footer">
       <div className="mx-auto max-w-[1284px] px-[34px] pt-16 pb-12 max-[700px]:px-5 max-[700px]:pt-10 max-[700px]:pb-8">
         <div className="grid grid-cols-[480px_230px_1fr] gap-6 max-[1150px]:grid-cols-[2fr_1fr_1.3fr] max-[950px]:grid-cols-2 max-[950px]:gap-8 max-[700px]:gap-x-4 max-[700px]:gap-y-7 [&>section:not(:first-child)]:flex [&>section:not(:first-child)]:flex-col [&>section:not(:first-child)]:items-start [&>section:not(:first-child)]:gap-[7px] [&_h2]:mb-[7px] [&_h2]:text-base [&_h2]:font-bold [&_h2]:tracking-[0.2px] [&_h2]:text-auth-text-footer-heading max-[700px]:[&_h2]:text-base [&>section:not(:first-child)_a]:text-base [&>section:not(:first-child)_button]:text-base [&>section:not(:first-child)_a]:leading-[19px] [&>section:not(:first-child)_button]:leading-[19px] [&_button]:text-left max-[700px]:[&>section:not(:first-child)_a]:text-xs max-[700px]:[&>section:not(:first-child)_button]:text-xs [&_button:hover]:text-white [&_a:hover]:text-white">
           <section className="max-[950px]:col-span-full max-[950px]:max-w-[520px] [&>p]:mb-6 [&>p]:text-base [&>p]:leading-[19px] [&_address]:grid [&_address]:gap-2.5 [&_address]:text-base [&_address]:leading-[17px] [&_address]:not-italic [&_address>*]:flex [&_address>*]:items-start [&_address>*]:gap-2 [&_address_strong]:-ml-[5px] [&_address_strong]:font-semibold [&_address_strong]:text-auth-text-footer-link [&_address_svg]:size-4 [&_address_svg]:text-auth-orange">
@@ -35,13 +35,13 @@ export function AuthFooter() {
                 Tầng 12, Tòa nhà Sông Đà, Đường Phạm Hùng, Phường Mỹ Đình 1,
                 Quận Nam Từ Liêm, Hà Nội
               </span>
-              <a href="tel:0962107888">
+              <a href="tel:0356520207">
                 <Phone />
-                Hotline 24/7: <strong>0962.107.888</strong>
+                Hotline 24/7: <strong>0356.520.207</strong>
               </a>
-              <a href="mailto:hotro@jobtot.vn">
+              <a href="mailto:kieuhuyentrang2007@gmail.com">
                 <Mail />
-                Email: <strong>hotro@jobtot.vn</strong>
+                Email: <strong>kieuhuyentrang2007@gmail.com</strong>
               </a>
             </address>
           </section>
@@ -57,7 +57,7 @@ export function AuthFooter() {
           <section>
             <h2>Dành cho Nhà tuyển dụng</h2>
             {employerLinks.map((label) => (
-              <ServiceNotice key={label} title={label}>
+              label === "Tìm hồ sơ ứng viên chuẩn AI" ? <Link key={label} to="/employer/discover">Tìm hồ sơ ứng viên</Link> : <ServiceNotice key={label} title={label}>
                 <button>{label}</button>
               </ServiceNotice>
             ))}

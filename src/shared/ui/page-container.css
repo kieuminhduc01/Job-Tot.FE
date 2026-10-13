@@ -1,0 +1,23 @@
+.page-container {
+  max-width: 1284px;
+  margin: auto;
+  padding: 0 50px 60px;
+}
+
+.page-container svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1150px) {
+  .page-container {
+    padding: 0 28px 50px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: 0 18px 40px;
+  }
+}

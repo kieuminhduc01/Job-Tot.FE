@@ -1,0 +1,123 @@
+import { test, expect } from '@playwright/test'
+
+const account = { id: 'hr-1', fullName: 'Nguyễn Văn An', email: 'hr@example.com', phone: '+84988123456', accountType: 'Employer', companyId: 'company-1', companyName: 'Tốt Tech', taxCode: '0109867899', verificationStatus: 'Pending' }
+const session = { account, accessToken: 'employer-access', refreshToken: 'employer-refresh', expiresAt: '2099-01-01', refreshExpiresAt: '2099-02-01' }
+test('invalid employer credentials show API feedback and allow retry without a session', async ({ page }) => {
+  const detail = 'Email công việc hoặc mật khẩu không đúng, hoặc tài khoản nhà tuyển dụng không khả dụng.'
+  await page.route('**/api/employer/auth/login', route => route.fulfill({ status: 401, contentType: 'application/problem+json', json: { status: 401, title: 'Đăng nhập không thành công', detail } }))
+  await page.goto('/login?role=employer')
+  await page.getByLabel('Email doanh nghiệp').fill('hr@example.com')
+  await page.locator('#password').fill('wrong-password')
+  await page.getByRole('button', { name: 'Đăng nhập ngay' }).click()
+  await expect(page.getByText(detail, { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Đăng nhập ngay' })).toBeEnabled()
+  await expect(page).toHaveURL(/\/login\?role=employer$/)
+  expect(await page.evaluate(() => sessionStorage.getItem('jobtot.employer.tokens'))).toBeNull()
+})
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/candidate/auth/me', route => route.fulfill({ status: 401 }))
+  await page.route('**/api/employer/auth/me', route => route.fulfill({ json: account }))
+  await page.route('**/api/employer/auth/logout', route => route.fulfill({ status: 204 }))
+})
+
+test('duplicate registration shows 409 feedback and leaves the form available', async ({ page }) => {
+  const detail = 'Email hoặc số điện thoại đã được đăng ký. Vui lòng đăng nhập hoặc dùng thông tin khác.'
+  await page.route('**/api/employer/auth/provinces', route => route.fulfill({ json: [{ id: '11111111-1111-1111-1111-111111111111', name: 'Hà Nội' }] }))
+  await page.route('**/api/employer/auth/register', route => route.fulfill({ status: 409, json: { status: 409, detail } }))
+  await page.goto('/register?role=employer')
+  await page.locator('#fullName').fill('Test HR')
+  await page.locator('#workPhone').fill('0988123456')
+  await page.locator('#email').fill('hr@example.com')
+  await page.locator('#companyName').fill('Test Company')
+  await page.locator('#taxCode').fill('0109867899')
+  await page.getByRole('combobox').selectOption('11111111-1111-1111-1111-111111111111')
+  await page.locator('#password').fill('matkhau123')
+  await page.locator('#confirmPassword').fill('matkhau123')
+  await page.locator('#acceptTerms').check()
+  await page.locator('#recruitmentCommitment').check()
+  await page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' }).click()
+  await expect(page.getByText(detail, { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' })).toBeEnabled()
+  await expect(page).toHaveURL(/\/register\?role=employer$/)
+  expect(await page.evaluate(() => sessionStorage.getItem('jobtot.employer.tokens'))).toBeNull()
+})
+
+test('employer registration, validation, real province request once under StrictMode and mobile', async ({ page }) => {
+  let provinceRequests = 0
+  let body
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
+  await page.route('**/api/employer/auth/provinces', route => { provinceRequests++; return route.fulfill({ json: [{ id: '11111111-1111-1111-1111-111111111111', name: 'Hà Nội' }] }) })
+  await page.route('**/api/employer/auth/register', route => { body = route.request().postDataJSON(); return route.fulfill({ status: 201, json: session }) })
+  await page.setViewportSize({ width: 1284, height: 1000 })
+  await page.goto('/register?role=employer')
+  await expect(page.getByRole('combobox')).toBeEnabled()
+  expect(provinceRequests).toBe(1)
+  await page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' }).click()
+  await expect(page.getByText('Vui lòng nhập họ và tên người liên hệ.', { exact: true })).toBeVisible()
+  await page.getByLabel('Họ và tên người liên hệ').fill(account.fullName)
+  await page.getByLabel('Số điện thoại công việc').fill('0988 123 456')
+  await page.getByLabel('Email doanh nghiệp').fill(account.email)
+  await page.getByLabel('Tên công ty đầy đủ').fill(account.companyName)
+  await page.getByLabel('Mã số thuế').fill(account.taxCode)
+  await page.getByRole('combobox').selectOption('11111111-1111-1111-1111-111111111111')
+  await page.locator('#password').fill('matkhau123')
+  await page.locator('#confirmPassword').fill('matkhau123')
+  await page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' }).click()
+  await expect(page.getByText('Vui lòng đồng ý điều khoản dịch vụ và chính sách bảo mật.', { exact: true })).toBeVisible()
+  await page.locator('#acceptTerms').check()
+  await page.locator('#recruitmentCommitment').check()
+  await page.screenshot({ path: 'test-results/employer-register-desktop.png', fullPage: true })
+  await page.setViewportSize({ width: 390, height: 844 })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.screenshot({ path: 'test-results/employer-register-mobile.png', fullPage: true })
+  await page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' }).click()
+  await expect(page).toHaveURL(/\/employer\/account$/)
+  await expect(page.getByText('Doanh nghiệp đang chờ xác minh thông tin đăng ký.', { exact: true })).toBeVisible()
+  expect(body).toEqual({ fullName: account.fullName, email: account.email, workPhone: '0988 123 456', companyName: account.companyName, taxCode: account.taxCode, headOfficeProvinceId: '11111111-1111-1111-1111-111111111111', password: 'matkhau123', confirmPassword: 'matkhau123', acceptTerms: true, recruitmentCommitment: true })
+  expect(await page.evaluate(() => Boolean(sessionStorage.getItem('jobtot.employer.tokens')))).toBe(true)
+  expect(await page.evaluate(() => sessionStorage.getItem('jobtot.candidate.tokens'))).toBeNull()
+  expect(errors).toEqual([])
+})
+
+test('employer login keeps role, remember restores once and logout clears session', async ({ page }) => {
+  let meRequests = 0
+  let body
+  await page.route('**/api/employer/auth/me', route => { meRequests++; return route.fulfill({ json: account }) })
+  await page.route('**/api/employer/auth/login', route => { body = route.request().postDataJSON(); return route.fulfill({ json: session }) })
+  await page.goto('/login?role=employer')
+  await expect(page.locator('#companyName')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Đăng ký mới', exact: true })).toHaveAttribute('href', '/register?role=employer')
+  await page.getByLabel('Email doanh nghiệp').fill(account.email)
+  await page.locator('#password').fill('matkhau123')
+  await page.locator('#remember').check()
+  await page.screenshot({ path: 'test-results/employer-login-desktop.png', fullPage: true })
+  await page.getByRole('button', { name: 'Đăng nhập ngay' }).click()
+  await expect(page).toHaveURL(/\/employer\/account$/)
+  expect(body).toEqual({ email: account.email, password: 'matkhau123', rememberMe: true })
+  expect(await page.evaluate(() => Boolean(localStorage.getItem('jobtot.employer.tokens')))).toBe(true)
+  await page.reload()
+  await expect(page.getByRole('heading', { name: `Xin chào, ${account.fullName}` })).toBeVisible()
+  expect(meRequests).toBe(1)
+  await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click()
+  await expect(page).toHaveURL(/\/login\?role=employer$/)
+  expect(await page.evaluate(() => localStorage.getItem('jobtot.employer.tokens'))).toBeNull()
+})
+
+test('province loading failure can retry and employer password recovery uses employer endpoint', async ({ page }) => {
+  let provinceRequests = 0
+  let recoveryEmail
+  await page.route('**/api/employer/auth/provinces', route => { provinceRequests++; return route.fulfill(provinceRequests === 1 ? { status: 503 } : { json: [{ id: 'province-1', name: 'Hà Nội' }] }) })
+  await page.route('**/api/employer/auth/forgot-password', route => { recoveryEmail = route.request().postDataJSON().email; return route.fulfill({ json: { message: 'Đã tiếp nhận yêu cầu khôi phục.' } }) })
+  await page.goto('/register?role=employer')
+  await expect(page.getByRole('button', { name: 'Đăng ký tài khoản Nhà tuyển dụng miễn phí' })).toBeDisabled()
+  await page.getByRole('button', { name: 'Thử lại', exact: true }).click()
+  await expect(page.getByRole('combobox')).toBeEnabled()
+  expect(provinceRequests).toBe(2)
+  await page.getByRole('link', { name: 'Đăng nhập', exact: true }).last().click()
+  await page.getByRole('button', { name: 'Quên mật khẩu?' }).click()
+  await page.getByRole('dialog').getByLabel('Email', { exact: true }).fill(account.email)
+  await page.getByRole('button', { name: 'Gửi yêu cầu khôi phục' }).click()
+  await expect(page.getByRole('dialog').getByRole('status')).toHaveText('Đã tiếp nhận yêu cầu khôi phục.')
+  expect(recoveryEmail).toBe(account.email)
+})

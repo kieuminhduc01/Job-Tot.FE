@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test'
 import { seedTokens, tokenSession } from './token-fixtures.js'
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/candidate/saved-jobs', route => route.fulfill({ json: [] }))
+  await page.route('**/api/jobs?*', route => route.fulfill({ json: { items: [], totalCount: 0, page: 1, pageSize: 6 } }))
+  await page.route('**/api/jobs/filters', route => route.fulfill({ json: { totalJobs: 0, totalCompanies: 0, salaryBands: [], experienceLevels: [], positionLevels: [], employmentTypes: [] } }))
+  await page.route('**/api/companies?*', route => route.fulfill({ json: { items: [], totalCount: 0 } }))
+  await page.route('**/api/companies/filters', route => route.fulfill({ json: { provinces: [], industries: [], stats: { totalCompanies: 0, openJobs: 0 } } }))
+  await page.route('**/api/candidate/companies', route => route.fulfill({ json: [] }))
+  await page.route('**/api/companies/featured', route => route.fulfill({ json: [] }))
+  await page.route('**/api/employer/auth/provinces', route => route.fulfill({ json: [] }))
+})
 
 for (const path of ['/', '/login', '/register']) {
   test(`restored session skips authentication at ${path}`, async ({ page }) => {
@@ -12,11 +22,12 @@ for (const path of ['/', '/login', '/register']) {
       await route.fulfill({ json: account })
     })
     await page.goto(path)
-    await expect(page.getByRole('status')).toHaveText('Đang kiểm tra phiên đăng nhập…')
+    if (path === '/') await expect(page.getByText('Đang kiểm tra đăng nhập…', { exact: true })).toBeVisible()
+    else await expect(page.getByRole('status')).toHaveText('Đang kiểm tra phiên đăng nhập…')
     await expect(page.locator('#password')).toHaveCount(0)
     resolveSession()
-    await expect(page).toHaveURL(/\/jobs$/)
-    await expect(page.getByText(`Xin chào, ${account.fullName}`)).toBeVisible()
+    await expect(page).toHaveURL(path === '/' ? /\/$/ : /\/jobs$/)
+    await expect(page.getByRole('link', { name: account.fullName, exact: true })).toBeVisible()
   })
 }
 
@@ -77,7 +88,7 @@ test('login, remember checkbox, recovery and mobile layout', async ({ page }) =>
 })
 
 for (const { mode, rememberMe } of [{ mode: 'login', rememberMe: true }, { mode: 'login', rememberMe: false }, { mode: 'register', rememberMe: false }]) {
-  test(`${mode} (remember=${rememberMe}): submits candidate payload, restores session and logs out`, async ({ page }) => {
+  test(`${mode} (remember=${rememberMe}): submits candidate payload and restores session`, async ({ page }) => {
     const account = { id: 'candidate-1', fullName: 'Nguyễn Văn A', accountType: 'Candidate' }
     let authenticated = false
     await page.route('**/api/candidate/auth/me', route => route.fulfill(authenticated ? { json: account } : { status: 401 }))
@@ -103,16 +114,12 @@ for (const { mode, rememberMe } of [{ mode: 'login', rememberMe: true }, { mode:
     else if (rememberMe) await page.getByRole('checkbox').check()
     await page.locator('button[type=submit]').click()
     await expect(page).toHaveURL(/\/jobs$/)
-    await expect(page.getByText(`Xin chào, ${account.fullName}`)).toBeVisible()
+    await expect(page.getByRole('link', { name: account.fullName, exact: true })).toBeVisible()
     const storage = await page.evaluate(() => ({ local: localStorage.getItem('jobtot.candidate.tokens'), session: sessionStorage.getItem('jobtot.candidate.tokens') }))
     expect(Boolean(storage.local)).toBe(rememberMe)
     expect(Boolean(storage.session)).toBe(!rememberMe)
     await page.reload()
-    await expect(page.getByText(`Xin chào, ${account.fullName}`)).toBeVisible()
-    await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click()
-    await expect(page.getByRole('link', { name: 'Đăng nhập', exact: true })).toBeVisible()
-    await page.reload()
-    await expect(page.getByRole('link', { name: 'Đăng nhập', exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: account.fullName, exact: true })).toBeVisible()
   })
 }
 

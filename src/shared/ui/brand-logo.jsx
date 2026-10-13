@@ -4,16 +4,18 @@ import { BriefcaseBusiness, Check } from "lucide-react";
 export function BrandLogo({ footer = false }) {
   return (
     <Link
-      to="/register"
+      to="/"
       className={`inline-flex shrink-0 items-center gap-2.5 no-underline max-[700px]:gap-[7px] ${footer ? "mb-3.5 text-white" : ""}`}
       aria-label="Job Tốt — Trang chủ"
     >
       <span className="relative grid size-10 place-items-center rounded-xl bg-auth-orange text-white shadow-[0_3px_6px_var(--color-auth-shadow-brand)] max-[700px]:size-9">
         <BriefcaseBusiness
+          data-brand-icon="true"
           aria-hidden="true"
           className="size-[23px] fill-white stroke-white"
         />
         <Check
+          data-brand-icon="true"
           aria-hidden="true"
           className="absolute top-[15px] left-3 size-[15px] fill-none stroke-auth-orange stroke-[3] max-[700px]:top-[13px] max-[700px]:left-2.5"
         />

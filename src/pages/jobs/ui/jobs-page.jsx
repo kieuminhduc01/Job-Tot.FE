@@ -1,106 +1,558 @@
-import { useSearchParams } from "react-router-dom";
-import { ArrowRight, BriefcaseBusiness } from "lucide-react";
-import { jobs, filterJobs, JobCard } from "@/entities/job";
-import { JobFilters } from "@/features/search-jobs";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
+import { jobsApi, JobListingCard } from "@/entities/job";
+import { companiesApi } from "@/entities/company";
 import { SaveJobButton, useSavedJobs } from "@/features/save-job";
-import { Badge } from "@/shared/ui/badge";
+import { useCandidateSession } from "@/features/authenticate";
+import { AuthHeader } from "@/widgets/auth-header";
+import { AuthFooter } from "@/widgets/auth-footer";
+import { CareerResources } from "@/widgets/career-resources";
+import { ServiceNotice } from "@/shared/ui/service-notice";
+import "./jobs.css";
 
+const pageSize = 6;
+const number = (value) => Number(value || 0).toLocaleString("vi-VN");
+const validId = (id) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 export function JobsPage({ savedOnly = false }) {
-  const [params, setParams] = useSearchParams();
-  const filters = {
-    query: params.get("q") || "",
-    location: params.get("location") || "",
-    type: params.get("type") || "",
-  };
+  return <JobDirectory savedOnly={savedOnly} />;
+}
+function JobDirectory({ savedOnly }) {
+  const { account, loading: sessionLoading } = useCandidateSession();
   const { savedIds } = useSavedJobs();
-  const items = filterJobs(
-    savedOnly ? jobs.filter((job) => savedIds.includes(job.id)) : jobs,
-    filters,
+  const [params, setParams] = useSearchParams();
+  const [result, setResult] = useState(null);
+  const [metadata, setMetadata] = useState(null);
+  const [locations, setLocations] = useState(null);
+  const [error, setError] = useState("");
+  const [metadataError, setMetadataError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const resultsRef = useRef(null);
+  const search = params.toString();
+  const savedKey = savedOnly
+    ? savedIds.filter(validId).slice(0, 1000).join(",")
+    : "";
+  const requestKey = `${search}|${savedOnly}|${savedKey}`;
+  const page = Math.max(
+    1,
+    Math.min(1000000, Math.trunc(Number(params.get("page"))) || 1),
   );
-  function updateFilters(next) {
-    const search = new URLSearchParams();
-    if (next.query) search.set("q", next.query);
-    if (next.location) search.set("location", next.location);
-    if (next.type) search.set("type", next.type);
-    setParams(search, { replace: true });
+  const loading = result?.key !== requestKey;
+  const legacyLocation = params.get("location");
+  const normalizeProvinceName = (name) =>
+    name
+      .replace(/^(Thành phố|Tỉnh)\s+/i, "")
+      .trim()
+      .toLocaleLowerCase("vi-VN");
+  const legacyProvince =
+    legacyLocation &&
+    locations?.provinces.find(
+      (option) =>
+        normalizeProvinceName(option.name) ===
+        normalizeProvinceName(legacyLocation),
+    );
+  const needsProvinceResolution = !!legacyLocation && !params.has("provinceId");
+  const waitingForProvinceResolution =
+    needsProvinceResolution &&
+    ((!locations && !metadataError) || !!legacyProvince);
+
+  useEffect(() => {
+    if (!needsProvinceResolution || !legacyProvince) return;
+    const next = new URLSearchParams(search);
+    next.delete("location");
+    next.set("provinceId", legacyProvince.id);
+    setParams(next, { replace: true });
+  }, [needsProvinceResolution, legacyProvince, search, setParams]);
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      Promise.allSettled([
+        jobsApi.filters(controller.signal),
+        companiesApi.metadata(controller.signal),
+      ]).then(([filters, directory]) => {
+        if (controller.signal.aborted) return;
+        if (filters.status === "fulfilled") setMetadata(filters.value);
+        if (directory.status === "fulfilled") setLocations(directory.value);
+        setMetadataError(
+          [filters, directory]
+            .filter((item) => item.status === "rejected")
+            .map((item) => item.reason.message)
+            .join(" "),
+        );
+      });
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [attempt]);
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      if (waitingForProvinceResolution) return;
+      const query = new URLSearchParams(search);
+      if (query.has("q") && !query.has("keyword"))
+        query.set("keyword", query.get("q"));
+      query.delete("q");
+      query.delete("includeClosed");
+      query.delete("jobIds");
+      query.set("page", String(page));
+      query.set("pageSize", String(pageSize));
+      if (savedOnly && !savedKey) {
+        setResult({
+          key: requestKey,
+          items: [],
+          totalCount: 0,
+          now: Date.now(),
+        });
+        setError("");
+        return;
+      }
+      if (savedOnly)
+        savedKey.split(",").forEach((id) => query.append("jobIds", id));
+      try {
+        const data = await jobsApi.search(query, controller.signal);
+        if (!controller.signal.aborted) {
+          setResult({ ...data, key: requestKey, now: Date.now() });
+          setError("");
+        }
+      } catch (failure) {
+        if (!controller.signal.aborted) {
+          setError(failure.message);
+          setResult({ key: requestKey, items: [], totalCount: 0 });
+        }
+      }
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    search,
+    page,
+    requestKey,
+    savedOnly,
+    savedKey,
+    attempt,
+    waitingForProvinceResolution,
+  ]);
+  function update(changes) {
+    const next = new URLSearchParams(params);
+    next.delete("page");
+    for (const [key, value] of Object.entries(changes)) {
+      next.delete(key);
+      if (Array.isArray(value)) value.forEach((item) => next.append(key, item));
+      else if (value !== "" && value !== false && value != null)
+        next.set(key, String(value));
+    }
+    setError("");
+    setParams(next);
   }
+  function toggle(key, value) {
+    const values = params.getAll(key);
+    update({
+      [key]: values.includes(value)
+        ? values.filter((item) => item !== value)
+        : [...values, value],
+    });
+  }
+  function checkboxGroup(key, title, options) {
+    return (
+      <fieldset className="job-filter-panel">
+        <legend>{title}</legend>
+        {options?.map((option) => (
+          <label key={option.value}>
+            <input
+              type="checkbox"
+              checked={params.getAll(key).includes(option.value)}
+              onChange={() => toggle(key, option.value)}
+            />
+            <span>{option.label}</span>
+            <small>{number(option.count)}</small>
+          </label>
+        ))}
+      </fieldset>
+    );
+  }
+  const totalPages = Math.ceil((result?.totalCount || 0) / pageSize);
+  const pages = [
+    ...new Set(
+      [1, page - 1, page, page + 1, totalPages].filter(
+        (value) => value > 0 && value <= totalPages,
+      ),
+    ),
+  ].sort((a, b) => a - b);
   return (
-    <main className="mx-auto max-w-6xl px-6 pt-10 pb-16">
-      <section className="relative mb-8 overflow-hidden rounded-3xl bg-emerald-950 px-7 py-12 text-white md:px-12 md:py-16">
-        <div
-          aria-hidden="true"
-          className="absolute -top-20 -right-16 size-80 rounded-full border-50 border-emerald-900/70"
-        />
-        <div className="relative max-w-2xl">
-          <Badge
-            className="mb-6 border-emerald-700 bg-emerald-900 text-emerald-100"
-            variant="outline"
-          >
-            BƯỚC TIẾP THEO TRONG SỰ NGHIỆP
-          </Badge>
-          <h1 className="text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+    <div className="companies-page jobs-directory-page font-roboto">
+      <title>
+        {savedOnly ? "Việc làm đã lưu" : "Tìm việc làm mới nhất"} | Job Tốt
+      </title>
+      <AuthHeader userName={account?.fullName} loading={sessionLoading} />
+      <main className="page-container">
+        <section className="jobs-hero">
+          <p className="jobs-ai">
+            <Sparkles />
+            Job Search Engine đầu tiên do người Việt phát triển{" "}
+            <strong>· Chuẩn AI 2026</strong>
+          </p>
+          <h1>
             {savedOnly ? (
-              "Cơ hội bạn đã lưu."
+              "Việc làm bạn đã lưu"
             ) : (
               <>
-                Công việc phù hợp.
+                Tìm việc chuẩn xác, kết nối trực tiếp
                 <br />
-                <span className="text-emerald-300">Tương lai rộng mở.</span>
+                với{" "}
+                <Link to="/companies">
+                  {metadata
+                    ? `${number(metadata.totalCompanies)} nhà tuyển dụng`
+                    : "nhà tuyển dụng"}
+                </Link>{" "}
+                hàng đầu
               </>
             )}
           </h1>
-          <p className="mt-5 max-w-lg text-sm leading-7 text-emerald-100/80 md:text-base">
-            {savedOnly
-              ? "Những vị trí bạn quan tâm, được lưu lại để dễ dàng xem sau."
-              : "Khám phá cơ hội mới, kết nối với doanh nghiệp và tìm nơi bạn có thể phát triển mỗi ngày."}
+          <p>
+            Tối ưu hóa hành trình nghề nghiệp với bộ lọc thông minh,{" "}
+            {metadata
+              ? `khám phá ${number(metadata.totalJobs)} việc làm `
+              : "khám phá cơ hội việc làm "}
+            <br className="jobs-desktop-break" />
+            toàn quốc và sàng lọc cơ hội lương cao, an toàn tuyệt đối.
           </p>
-          <div className="mt-7 flex items-center gap-2 text-sm text-emerald-200">
-            <ArrowRight className="size-4" />
-            {jobs.length} vị trí mẫu để khám phá
-          </div>
+        </section>
+        <div className="jobs-personal-link">
+          <Link to="/my-jobs">
+            Việc làm của tôi · Xem các việc làm đã lưu <ArrowRight />
+          </Link>
         </div>
-      </section>
-      <JobFilters filters={filters} onChange={updateFilters} />
-      <div className="mt-10 mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">
-          {savedOnly ? "Việc làm đã lưu" : "Cơ hội dành cho bạn"}{" "}
-          <span
-            className="ml-2 text-sm font-normal text-muted-foreground"
-            role="status"
-          >
-            ({items.length} kết quả)
-          </span>
-        </h2>
-        <span className="text-xs text-muted-foreground">
-          Dữ liệu minh họa · Chưa kết nối backend
-        </span>
-      </div>
-      {items.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
-          {items.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              action={<SaveJobButton jobId={job.id} title={job.title} />}
+        <form
+          className="company-search jobs-search"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const data = new FormData(event.currentTarget);
+            update({
+              keyword: data.get("keyword").trim(),
+              q: "",
+              location: "",
+              provinceId: data.get("provinceId"),
+              industryId: data.get("industryId"),
+            });
+            resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
+        >
+          <label>
+            <Search />
+            <input
+              key={params.get("keyword") || params.get("q") || ""}
+              name="keyword"
+              defaultValue={params.get("keyword") || params.get("q") || ""}
+              aria-label="Từ khóa công việc"
+              maxLength={200}
+              placeholder="Từ khóa công việc"
             />
-          ))}
+          </label>
+          <label>
+            <MapPin />
+            <span>
+              ĐỊA ĐIỂM
+              <select
+                key={`${params.get("provinceId") || ""}|${!!locations}`}
+                name="provinceId"
+                aria-label="Địa điểm"
+                defaultValue={params.get("provinceId") || ""}
+                disabled={!locations}
+              >
+                <option value="">Tất cả tỉnh, thành</option>
+                {locations?.provinces.map((option) => (
+                  <option value={option.id} key={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+          <label>
+            <BriefcaseBusiness />
+            <span>
+              NGÀNH NGHỀ
+              <select
+                key={`${params.get("industryId") || ""}|${!!locations}`}
+                name="industryId"
+                aria-label="Ngành nghề"
+                defaultValue={params.get("industryId") || ""}
+              >
+                <option value="">Tất cả ngành nghề</option>
+                {locations?.industries.map((option) => (
+                  <option value={option.id} key={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+          <button className="company-primary" type="submit">
+            <Search />
+            Tìm việc ngay
+          </button>
+        </form>
+        <div className="job-directory-layout" ref={resultsRef}>
+          <button
+            className="jobs-mobile-filters"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen((value) => !value)}
+          >
+            <SlidersHorizontal />
+            Bộ lọc việc làm
+          </button>
+          <aside
+            className={`job-directory-filters ${filtersOpen ? "is-open" : ""}`}
+            aria-label="Bộ lọc việc làm"
+          >
+            <div className="job-filter-panel job-shield-panel">
+              <h2>
+                <ShieldCheck />
+                Bảo chứng uy tín <span>JOB TỐT SHIELD</span>
+              </h2>
+              <label className="job-shield-choice">
+                <input
+                  type="checkbox"
+                  checked={params.get("verifiedOnly") === "true"}
+                  onChange={(event) =>
+                    update({ verifiedOnly: event.target.checked })
+                  }
+                />
+                <span>
+                  <strong>Chỉ hiển thị NTD có Job Tốt Shield</strong>
+                  <small>Doanh nghiệp đã được xác thực trên nền tảng.</small>
+                </span>
+              </label>
+            </div>
+            {metadataError && (
+              <div role="alert" className="company-error">
+                {metadataError}
+                <button onClick={() => setAttempt((value) => value + 1)}>
+                  Thử lại
+                </button>
+              </div>
+            )}
+            {!metadata && !metadataError ? (
+              <p role="status" className="job-filter-loading">
+                Đang tải bộ lọc…
+              </p>
+            ) : (
+              <>
+                <fieldset className="job-filter-panel">
+                  <legend>Mức lương hàng tháng</legend>
+                  <button
+                    className="job-filter-reset"
+                    onClick={() => update({ salaryBand: "" })}
+                  >
+                    Đặt lại
+                  </button>
+                  {metadata?.salaryBands.map((option) => (
+                    <label key={option.value}>
+                      <input
+                        type="radio"
+                        name="salary-band"
+                        checked={params.get("salaryBand") === option.value}
+                        onChange={() => update({ salaryBand: option.value })}
+                      />
+                      <span>{option.label}</span>
+                      <small>{number(option.count)}</small>
+                    </label>
+                  ))}
+                </fieldset>
+                {checkboxGroup(
+                  "experienceLevels",
+                  "Kinh nghiệm làm việc",
+                  metadata?.experienceLevels,
+                )}
+                {checkboxGroup(
+                  "positionLevels",
+                  "Cấp bậc",
+                  metadata?.positionLevels,
+                )}
+                <fieldset className="job-filter-panel">
+                  <legend>Hình thức làm việc</legend>
+                  <div className="job-employment-options">
+                    {metadata?.employmentTypes.map((option) => (
+                      <button
+                        key={option.value}
+                        aria-pressed={params
+                          .getAll("employmentTypes")
+                          .includes(option.value)}
+                        onClick={() => toggle("employmentTypes", option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </>
+            )}
+            <button
+              className="job-reset-all"
+              onClick={() => {
+                setError("");
+                setParams({});
+              }}
+            >
+              Thiết lập lại bộ lọc
+            </button>
+            <ServiceNotice title="Job Tốt Shield">
+              <button className="job-filter-help">
+                <ShieldCheck />
+                Tìm hiểu về bảo chứng uy tín <ArrowRight />
+              </button>
+            </ServiceNotice>
+          </aside>
+          <section
+            className="job-directory-results"
+            aria-label={savedOnly ? "Việc làm đã lưu" : "Kết quả tìm việc"}
+            aria-busy={loading}
+          >
+            {error ? (
+              <div role="alert" className="company-error">
+                {error}
+                <button onClick={() => setAttempt((value) => value + 1)}>
+                  Thử lại
+                </button>
+              </div>
+            ) : loading ? (
+              <div role="status" className="job-directory-loading">
+                Đang tải việc làm…
+                {[1, 2, 3].map((value) => (
+                  <div className="company-skeleton" key={value} />
+                ))}
+              </div>
+            ) : result.items.length ? (
+              <>
+                <div className="job-directory-list">
+                  {result.items.map((job) => (
+                    <JobListingCard
+                      key={job.id}
+                      job={job}
+                      now={result.now}
+                      action={
+                        <SaveJobButton jobId={job.id} title={job.title} />
+                      }
+                    />
+                  ))}
+                </div>
+                <div className="job-directory-pagination">
+                  <span>
+                    Hiển thị {(page - 1) * pageSize + 1} –{" "}
+                    {Math.min(page * pageSize, result.totalCount)} trong tổng số{" "}
+                    {number(result.totalCount)} việc làm
+                  </span>
+                  <nav
+                    className="company-pagination"
+                    aria-label="Phân trang việc làm"
+                  >
+                    <button
+                      aria-label="Trang trước"
+                      disabled={page <= 1}
+                      onClick={() => {
+                        update({ page: page - 1 });
+                        resultsRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }}
+                    >
+                      <ChevronLeft />
+                    </button>
+                    {pages.map((value, index) => (
+                      <span className="company-page-slot" key={value}>
+                        {index > 0 && value - pages[index - 1] > 1 && (
+                          <span>…</span>
+                        )}
+                        <button
+                          aria-label={`Trang ${value}`}
+                          aria-current={page === value ? "page" : undefined}
+                          onClick={() => {
+                            update({ page: value });
+                            resultsRef.current?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                          }}
+                        >
+                          {value}
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      aria-label="Trang sau"
+                      disabled={page >= totalPages}
+                      onClick={() => {
+                        update({ page: page + 1 });
+                        resultsRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }}
+                    >
+                      <ChevronRight />
+                    </button>
+                  </nav>
+                </div>
+              </>
+            ) : (
+              <div className="company-empty">
+                <BriefcaseBusiness />
+                <h2>
+                  {savedOnly
+                    ? "Chưa có việc làm đã lưu phù hợp"
+                    : "Không tìm thấy việc làm phù hợp"}
+                </h2>
+                <p>
+                  {savedOnly
+                    ? "Lưu các vị trí bạn quan tâm để tìm lại tại đây."
+                    : "Thử thay đổi từ khóa hoặc thiết lập lại bộ lọc."}
+                </p>
+                {savedOnly ? (
+                  <Link className="company-primary" to="/jobs">
+                    Khám phá việc làm
+                  </Link>
+                ) : (
+                  <button
+                    className="company-primary"
+                    onClick={() => setParams({})}
+                  >
+                    Thiết lập lại bộ lọc
+                  </button>
+                )}
+              </div>
+            )}
+            {!loading &&
+              !error &&
+              result.totalCount > 0 &&
+              result.items.length === 0 && (
+                <button
+                  className="company-primary"
+                  onClick={() => update({ page: 1 })}
+                >
+                  Về trang đầu
+                </button>
+              )}
+          </section>
         </div>
-      ) : (
-        <div className="rounded-2xl border border-dashed px-6 py-16 text-center">
-          <BriefcaseBusiness
-            aria-hidden="true"
-            className="mx-auto mb-4 size-9 text-muted-foreground"
-          />
-          <h2 className="font-semibold">
-            {savedOnly
-              ? "Chưa có việc làm phù hợp trong danh sách đã lưu"
-              : "Chưa tìm thấy việc làm phù hợp"}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Thử thay đổi bộ lọc hoặc khám phá thêm các vị trí khác.
-          </p>
+        <div className="jobs-career-resources">
+          <CareerResources />
         </div>
-      )}
-    </main>
+      </main>
+      <AuthFooter />
+    </div>
   );
 }

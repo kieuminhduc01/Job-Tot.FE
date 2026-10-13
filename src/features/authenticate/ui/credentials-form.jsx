@@ -1,16 +1,21 @@
+import { useEmailAuthFlow } from "../model/use-email-auth-flow";
+import { EmailAuthFields } from "./email-auth-fields";
 import { Button } from "@/shared/ui/button";
+import { useToast } from "@/shared/ui/toast-context";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Label } from "@/shared/ui/label";
 import { ArrowRight, ContactRound, LockKeyhole, Mail } from "lucide-react";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { authReturnPath } from "@/shared/lib/auth-return-path";
 import { candidateAuth } from "../api/candidate-auth";
 import { useCandidateSession } from "../model/session-context";
 import { validateAuth } from "../model/validation";
 import { AuthField } from "./auth-field";
 import { ForgotPasswordDialog } from "./forgot-password-dialog";
 
-export function CredentialsForm({ mode, role }) {
+export function CredentialsForm({ mode }) {
+  const notify = useToast();
   const register = mode === "register";
   const [values, setValues] = useState({
     fullName: "",
@@ -24,7 +29,9 @@ export function CredentialsForm({ mode, role }) {
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { signIn } = useCandidateSession();
+  const emailFlow = useEmailAuthFlow("candidate");
   function field(name) {
     return {
       value: values[name],
@@ -46,27 +53,30 @@ export function CredentialsForm({ mode, role }) {
       document.getElementById(Object.keys(nextErrors)[0])?.focus();
       return;
     }
-    if (role !== "candidate") {
-      setMessage("Chức năng tài khoản nhà tuyển dụng chưa được hỗ trợ.");
-      return;
-    }
     submitting.current = true;
     setPending(true);
     try {
+      const emailVerificationToken = register ? await emailFlow.prepareRegistration(values.identity) : null;
+      if (register && !emailVerificationToken) { setMessage("Kiểm tra email và nhập mã xác thực để tiếp tục."); return; }
+      const newPassword = !register ? await emailFlow.changeTemporary() : null;
+      if (newPassword) setValues(current => ({ ...current, password: newPassword }));
       const body = {
         emailOrPhone: values.identity.trim(),
-        password: values.password,
+        password: newPassword || values.password,
       };
       const session = register
         ? await candidateAuth.register({
             ...body,
+            emailVerificationToken,
             fullName: values.fullName.trim(),
             confirmPassword: values.confirmPassword,
           })
         : await candidateAuth.login({ ...body, rememberMe: remember });
       signIn(session.account, { rememberMe: !register && remember });
-      navigate("/jobs", { replace: true });
+      notify(register ? "Đăng ký tài khoản thành công." : "Đăng nhập thành công.");
+      navigate(authReturnPath(search), { replace: true });
     } catch (failure) {
+      if (failure.changeToken) emailFlow.setChangeToken(failure.changeToken);
       setErrors(failure.fields || {});
       setMessage(failure.message);
     } finally {
@@ -92,7 +102,7 @@ export function CredentialsForm({ mode, role }) {
       )}
       <AuthField
         name="identity"
-        label={"Email hoặc số điện thoại"}
+        label={register ? "Email" : "Email hoặc số điện thoại"}
         icon={Mail}
         autoComplete="username"
         placeholder="email@example.com"
@@ -143,6 +153,7 @@ export function CredentialsForm({ mode, role }) {
           </Label>
         </div>
       )}
+      <EmailAuthFields flow={emailFlow} pending={pending} report={setMessage} />
       <Button
         type="submit"
         disabled={pending}

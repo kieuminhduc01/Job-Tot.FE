@@ -1,5 +1,6 @@
 import { NavLink, Link } from "react-router-dom";
-import { BriefcaseBusiness } from "lucide-react";
+import { BriefcaseBusiness, Wrench } from "lucide-react";
+import { JobsMenu } from "@/shared/ui/jobs-menu";
 import { cn } from "@/shared/lib/utils";
 import { useState } from "react";
 import { useCandidateSession } from "@/features/authenticate";
@@ -40,10 +41,10 @@ export function SiteHeader() {
           aria-label="Điều hướng chính"
           className="flex gap-6 text-sm font-medium"
         >
+          <JobsMenu />
+          <NavLink to="/tools" className={({ isActive }) => cn("flex items-center gap-2 py-2 transition-colors hover:text-emerald-700", isActive ? "text-emerald-700" : "text-muted-foreground")}><Wrench className="size-4" />Kho tiện ích</NavLink>
           {[
             ["/companies", "Doanh nghiệp"],
-            ["/jobs", "Khám phá việc làm"],
-            ["/saved-jobs", "Việc làm đã lưu"],
             ["/profile", "Hồ sơ cá nhân"],
           ].map(([to, label]) => (
             <NavLink

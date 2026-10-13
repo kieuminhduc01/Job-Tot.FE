@@ -1,0 +1,15 @@
+/* Shared pagination appearance, based on the company directory. */
+:root{--paging-background:#f6f8fb;--paging-text:#748299;--paging-active:#ff602e}
+body :is(.company-pagination,.mj-pagination>div,.td-pagination>div,.er-pagination>div,.cp-pagination>div,.admin-pagination>div,.cv-gallery-pagination nav){display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) button{display:grid;place-items:center;min-width:30px;width:auto;height:30px;min-height:30px;padding:0 5px;border:0;border-radius:6px;background:var(--paging-background);color:var(--paging-text);font-size:12px;font-weight:400;line-height:1;cursor:pointer;box-shadow:none}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) button[aria-current=page],body :is(.td-pagination,.er-pagination,.cp-pagination)>div>b{display:grid;place-items:center;min-width:30px;height:30px;padding:0 5px;border:0;border-radius:6px;background:var(--paging-active);color:#fff;font-size:12px;font-weight:400}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) button:disabled{opacity:.5;cursor:default}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) button:not(:disabled):not([aria-current=page]):hover{background:#edf1f7;color:#334155}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) button:focus-visible{outline:2px solid #ff9f7b;outline-offset:3px}
+body :is(.company-pagination,.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination) svg{width:13px;height:13px}
+.company-page-slot,.mj-pagination>div>span{display:flex;align-items:center;gap:5px}
+body :is(.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination){gap:12px;flex-wrap:wrap}
+body :is(.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination)>span{font-size:12px;line-height:1.5;color:#8b96a8}
+@media(max-width:600px){body :is(.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination){flex-direction:column;align-items:center}body :is(.mj-pagination,.td-pagination,.er-pagination,.cp-pagination,.admin-pagination,.cv-gallery-pagination)>span{text-align:center}}
+
+body .cp-pagination>div>strong{display:grid;place-items:center;min-width:30px;height:30px;padding:0 5px;border-radius:6px;background:var(--paging-active);color:#fff;font-size:12px;font-weight:400}

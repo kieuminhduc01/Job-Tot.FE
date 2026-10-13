@@ -34,7 +34,7 @@ export function AuthField({
           id={name}
           name={name}
           type={password && !visible ? "password" : "text"}
-          className={`px-[38px] py-2.5 text-sm text-auth-text-input shadow-[inset_0_1px_2px_var(--color-auth-shadow-inset)] h-[43px] rounded-lg border border-input bg-auth-surface-input pl-11 placeholder:text-auth-text-placeholder dark:bg-auth-surface-input ${name === "confirmPassword" ? "pr-[33px] text-base md:text-base" : ""}`}
+          className={`px-[38px] py-2.5 text-sm text-auth-text-input shadow-[inset_0_1px_2px_var(--color-auth-shadow-inset)] h-[43px] rounded-lg border border-input bg-auth-surface-input pl-11 placeholder:text-auth-text-placeholder dark:bg-auth-surface-input ${name === "confirmPassword" ? "pr-[33px]" : ""}`}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${name}-error` : undefined}
           {...props}

@@ -4,6 +4,7 @@ export const tokenSession = (account = { id: 'candidate', fullName: 'Test Candid
 });
 
 export async function seedTokens(page, persistent = false) {
+  await page.route('**/api/candidate/saved-jobs', route => route.fulfill({ json: [] }));
   await page.addInitScript(({ tokens, persistent }) => {
     const storage = persistent ? localStorage : sessionStorage;
     if (!storage.getItem('jobtot.candidate.tokens')) storage.setItem('jobtot.candidate.tokens', JSON.stringify(tokens));

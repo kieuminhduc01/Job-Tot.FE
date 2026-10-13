@@ -54,8 +54,25 @@ const fsdRule = {
   },
 };
 
+const requestEffectRule = {
+  meta: { type: "problem", schema: [], messages: { cleanup: "API effects must defer startup with setTimeout, use AbortController, and clear the timer before aborting in cleanup (StrictMode)." } },
+  create(context) {
+    return {
+      CallExpression(node) {
+        const effect = node.callee.type === "Identifier" ? node.callee.name : node.callee.type === "MemberExpression" ? node.callee.property.name : null;
+        const callback = node.arguments[0];
+        if (effect !== "useEffect" || !callback || !["ArrowFunctionExpression", "FunctionExpression"].includes(callback.type)) return;
+        const code = context.sourceCode.getText(callback);
+        if (!/\b(?:fetch|messagesApi)\s*\(|\b\w*(?:Api|Auth)\.\w+\s*\(/.test(code)) return;
+        if (!/\bsetTimeout\s*\(/.test(code) || !/\bAbortController\s*\(/.test(code) || !/\bclearTimeout\s*\(/.test(code) || !/\.abort\s*\(/.test(code) || code.indexOf("clearTimeout(") > code.lastIndexOf(".abort("))
+          context.report({ node: callback, messageId: "cleanup" });
+      },
+    };
+  },
+};
+
 export default [
-  { ignores: ["dist", "node_modules"] },
+  { ignores: ["dist", "node_modules", "test-results", "playwright-report"] },
   {
     files: ["**/*.{js,jsx}"],
     ...js.configs.recommended,
@@ -69,6 +86,7 @@ export default [
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       fsd: { rules: { boundaries: fsdRule } },
+      "request-lifecycle": { rules: { "safe-fetch-effect": requestEffectRule } },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -81,6 +99,7 @@ export default [
         { allowConstantExport: true },
       ],
       "fsd/boundaries": "error",
+      "request-lifecycle/safe-fetch-effect": "error",
     },
   },
   {

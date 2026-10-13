@@ -1,7 +1,9 @@
+import { readResponseJson } from "@/shared/api/read-response-json";
 import { candidateFetch } from "@/shared/api/candidate-session";
+import { getCandidateProfile } from "@/shared/api/candidate-profile";
 async function request(path, options = {}) {
   const response = await candidateFetch(path, options);
-  const data = await response.json().catch(() => null);
+  const data = await readResponseJson(response);
   if (!response.ok) {
     const error = new Error(data?.detail || Object.values(data?.errors || {}).flat().join(" ") || "Không thể tải hoặc lưu hồ sơ. Vui lòng thử lại.");
     error.status = response.status;
@@ -16,7 +18,10 @@ async function mutate(method, body) {
     body: multipart ? body : JSON.stringify({ ...body, birthDate: body.birthDate || null }),
   });
 }
-export const profileApi = { get: () => request("profile"), save: data => mutate("PUT", data), upload: file => { const body = new FormData(); body.append("file", file); return mutate("POST", body); } };
+export const profileApi = { get: getCandidateProfile, save: data => mutate("PUT", data), upload: file => { const body = new FormData(); body.append("file", file); return mutate("POST", body); } };
+profileApi.setDefault = (id, isDefault) => request(`profile/cvs/${encodeURIComponent(id)}/default`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isDefault }) });
+profileApi.avatar = file => { const body = new FormData(); body.append("file", file); return request("profile/avatar", { method: "POST", body }); };
+profileApi.removeAvatar = () => request("profile/avatar", { method: "DELETE" });
 
 export async function downloadCv(cv) {
   const response = await candidateFetch(`profile/cvs/${cv.id}`);

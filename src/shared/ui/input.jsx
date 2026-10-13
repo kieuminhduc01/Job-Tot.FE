@@ -1,7 +1,9 @@
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
+import { DatePicker } from "./date-picker";
 
 function Input({ className, type, ...props }) {
+  if (type === "date" || type === "datetime-local") return <DatePicker type={type} className={className} {...props} />;
   return (
     <input
       type={type}

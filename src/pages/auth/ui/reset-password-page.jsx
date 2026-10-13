@@ -1,9 +1,13 @@
+import { CareerResources } from "@/widgets/career-resources";
+import { AuthHeader } from '@/widgets/auth-header';
+import { AuthFooter } from '@/widgets/auth-footer';
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { candidateAuth, useCandidateSession } from '@/features/authenticate'
+import { candidateAuth, useCandidateSession, employerAuth, useEmployerSession } from '@/features/authenticate'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
+import { PageBreadcrumb } from '@/shared/ui/page-breadcrumb'
 
 export function ResetPasswordPage() {
   const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('token') || '')
@@ -12,7 +16,10 @@ export function ResetPasswordPage() {
   const [message, setMessage] = useState('')
   const [pending, setPending] = useState(false)
   const [complete, setComplete] = useState(false)
-  const { signIn } = useCandidateSession()
+  const candidate = useCandidateSession()
+  const employer = useEmployerSession()
+  const isEmployer = new URLSearchParams(window.location.search).get("role") === "employer"
+  const { signIn } = isEmployer ? employer : candidate
   async function submit(event) {
     event.preventDefault()
     if (pending) return
@@ -20,9 +27,9 @@ export function ResetPasswordPage() {
     setPending(true)
     setMessage('')
     try {
-      await candidateAuth.resetPassword({ token, password, confirmPassword: confirmation })
+      await (isEmployer ? employerAuth : candidateAuth).resetPassword({ token, password, confirmPassword: confirmation })
       signIn(null)
-      window.history.replaceState(null, '', window.location.pathname)
+      window.history.replaceState(null, '', window.location.pathname + (isEmployer ? '?role=employer' : ''))
       setComplete(true)
       setPassword('')
       setConfirmation('')
@@ -30,7 +37,9 @@ export function ResetPasswordPage() {
       setMessage(Object.values(failure.fields || {}).join(' ') || failure.message)
     } finally { setPending(false) }
   }
-  return <main className="mx-auto max-w-md px-6 py-16">
+  return <div className="font-roboto"><AuthHeader /><main className="mx-auto max-w-[1284px] px-6 py-16 font-roboto">
+    <div className="mx-auto max-w-md">
+    <PageBreadcrumb current="Đặt lại mật khẩu" />
     <title>Đặt lại mật khẩu | Job Tốt</title>
     <h1 className="mb-4 text-2xl font-bold">Đặt lại mật khẩu</h1>
     {complete ? <p role="status">Mật khẩu đã được cập nhật. Vui lòng đăng nhập bằng mật khẩu mới.</p>
@@ -43,6 +52,8 @@ export function ResetPasswordPage() {
           <Button type="submit" disabled={pending}>{pending ? 'Đang xử lý…' : 'Cập nhật mật khẩu'}</Button>
           {message && <p role="alert">{message}</p>}
         </form>}
-    <Link to="/login" className="mt-6 inline-block text-orange-600 underline">Quay lại đăng nhập</Link>
-  </main>
+    <Link to={isEmployer ? "/login?role=employer" : "/login"} className="mt-6 inline-block text-orange-600 underline">Quay lại đăng nhập</Link>
+    </div>
+    <CareerResources />
+  </main><AuthFooter /></div>
 }

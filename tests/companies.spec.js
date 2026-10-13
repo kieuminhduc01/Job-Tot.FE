@@ -31,6 +31,35 @@ async function setup(page, authenticated = false) {
   });
 }
 
+test('initial directory load sends each public request once under StrictMode', async ({ page }) => {
+  await setup(page);
+  const requests = { list: 0, filters: 0, featured: 0 };
+  page.on('request', request => {
+    const path = new URL(request.url()).pathname;
+    if (path === '/api/companies') requests.list += 1;
+    if (path === '/api/companies/filters') requests.filters += 1;
+    if (path === '/api/companies/featured') requests.featured += 1;
+  });
+  await page.goto('/companies');
+  await expect(page.locator('.company-list .company-card')).toHaveCount(10);
+  await expect(page.locator('.company-featured-grid .company-card')).toHaveCount(4);
+  expect(requests).toEqual({ list: 1, filters: 1, featured: 1 });
+});
+
+test('signed-in directory restores session and loads follows once under StrictMode', async ({ page }) => {
+  await setup(page, true);
+  await page.route('**/api/candidate/saved-jobs', route => route.fulfill({ json: [] }));
+  const requests = { session: 0, follows: 0 };
+  page.on('request', request => {
+    const path = new URL(request.url()).pathname;
+    if (path === '/api/candidate/auth/me') requests.session += 1;
+    if (path === '/api/candidate/followed-companies') requests.follows += 1;
+  });
+  await page.goto('/companies');
+  await expect(page.locator('.company-list .company-card')).toHaveCount(10);
+  await expect.poll(() => requests).toEqual({ session: 1, follows: 1 });
+});
+
 test('public company directory reuses the guest header and renders desktop and mobile', async ({ page }) => {
   await setup(page);
   await page.setViewportSize({ width: 1284, height: 1000 });
@@ -98,7 +127,7 @@ test('search, filters, sorting and pagination are sent to the API and reflected 
   await expect(page.locator('.company-sort button').nth(1)).toHaveAttribute("aria-pressed", "true");
   await page.getByRole('textbox', { name: 'Từ khóa công ty' }).fill('Shopee');
   const request = page.waitForRequest(request => new URL(request.url()).pathname === '/api/companies' && new URL(request.url()).searchParams.get('keyword') === 'Shopee');
-  await page.getByRole('button', { name: 'Tìm việc ngay', exact: true }).click();
+  await page.getByRole('button', { name: 'Tìm công ty', exact: true }).click();
   const url = new URL((await request).url());
   expect(url.searchParams.get('sort')).toBe('jobs');
   expect(url.searchParams.get('CompanySizeMin')).toBe('1001');
@@ -108,6 +137,49 @@ test('search, filters, sorting and pagination are sent to the API and reflected 
   await expect(page.locator('.company-list .company-card')).toHaveCount(1);
   await page.reload();
   await expect(page.getByRole('textbox', { name: 'Từ khóa công ty' })).toHaveValue('Shopee');
+});
+
+test('company detail shares the directory header, footer and CV resources', async ({ page }) => {
+  await setup(page);
+  await page.route(/\/api\/companies\?.*$/, route => {
+    const url = new URL(route.request().url());
+    return route.fulfill({ json: { items: url.searchParams.has('companyId') ? [companies[0]] : companies, totalCount: 1 } });
+  });
+  await page.route('**/api/jobs?**', route => route.fulfill({ json: {
+    items: [{ id: 'job', title: 'Cloud Engineer', location: 'Ha Noi', description: 'Build cloud infrastructure.' }], totalCount: 1,
+  } }));
+  await page.goto('/companies');
+  await page.locator('.company-featured-grid h3 a').first().click();
+  await expect(page).toHaveURL(new RegExp(`/companies/${companies[0].id}$`));
+  await expect(page.getByRole('heading', { level: 1, name: companies[0].name })).toBeVisible();
+  await expect(page.locator('header')).toHaveCount(1);
+  await expect(page.locator('footer')).toHaveCount(1);
+  await expect(page.locator('.cv-templates')).toHaveCount(1);
+  await expect(page.locator('#company-open-jobs')).toContainText('Cloud Engineer');
+  await page.setViewportSize({ width: 1284, height: 1000 });
+  await page.screenshot({ path: 'test-results/company-detail-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: 'test-results/company-detail-mobile.png', fullPage: true });
+  await page.reload();
+  await expect(page.getByRole('heading', { level: 1, name: companies[0].name })).toBeVisible();
+});
+
+test('opening company jobs navigates to the detail jobs section under StrictMode', async ({ page }) => {
+  await setup(page);
+  let requests = 0;
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/api/jobs') requests += 1;
+  });
+  await page.route('**/api/jobs?**', route => route.fulfill({
+    json: { items: [{ id: 'job', title: 'Cloud Engineer', location: 'Ha Noi', description: 'Build cloud infrastructure.' }], totalCount: 1 },
+  }));
+  await page.goto('/companies');
+  await page.locator('.company-featured-grid .company-primary').first().click();
+  await expect(page).toHaveURL(`/companies/${companies[0].id}#company-open-jobs`);
+  await expect(page.locator('#company-open-jobs')).toContainText('Cloud Engineer');
+  await expect.poll(() => page.locator('#company-open-jobs').evaluate(element => Math.abs(element.getBoundingClientRect().top - 24))).toBeLessThan(2);
+  expect(requests).toBe(1);
 });
 
 test('signed-in header, persisted following and company-specific jobs use real API contracts', async ({ page }) => {
@@ -136,10 +208,11 @@ test('signed-in header, persisted following and company-specific jobs use real A
   await expect(page.locator('.company-featured-grid .company-follow').first()).toHaveAttribute('aria-pressed', 'true');
   await expect(follow).toHaveCSS('background-color', 'rgb(255, 96, 46)');
   await page.locator('.company-featured-grid .company-primary').first().click();
-  await expect(page.getByRole('dialog')).toContainText('Cloud Engineer');
-  await page.getByText('Cloud Engineer', { exact: true }).click();
-  await expect(page.getByRole('dialog')).toContainText('Build secure cloud infrastructure.');
-  await page.keyboard.press('Escape');
+  await expect(page).toHaveURL(`/companies/${companies[0].id}#company-open-jobs`);
+  await expect(page.locator('#company-open-jobs')).toContainText('Cloud Engineer');
+  await page.locator('#company-open-jobs summary').click();
+  await expect(page.locator('#company-open-jobs')).toContainText('Build secure cloud infrastructure.');
+  await page.goBack();
   await page.locator('.company-featured-grid .company-follow').first().click();
   await expect(page.locator('.company-featured-grid .company-follow').first()).toHaveAttribute('aria-pressed', 'false');
   await expect(follow).toHaveCSS('background-color', 'rgb(248, 250, 252)');
@@ -179,4 +252,28 @@ test('company cards tolerate missing and null hiring details from the API', asyn
   await expect(legacy.getByRole('button', { name: 'Xem việc làm', exact: true })).toBeVisible();
   await expect(page.locator('.company-list .company-card').nth(1)).toContainText('42 việc làm đang mở');
   expect(errors).toEqual([]);
+});
+
+test('follow actions show dismissible toasts and failures never report success', async ({ page }) => {
+  await setup(page, true);
+  let fail = false;
+  await page.route(`**/api/candidate/followed-companies/${companies[0].id}`, route => route.fulfill(fail ? { status: 500, json: { detail: 'Không thể cập nhật theo dõi.' } } : { status: 204 }));
+  await page.goto('/companies');
+  const follow = page.locator('.company-featured-grid .company-follow').first();
+  await expect(follow).toBeEnabled();
+  await follow.click();
+  await expect(page.locator('.app-toast-success')).toHaveText(`Đã theo dõi ${companies[0].name}.`);
+  await page.getByRole('button', { name: 'Đóng thông báo' }).click();
+  await expect(page.locator('.app-toast')).toHaveCount(0);
+  await page.clock.install();
+  await follow.click();
+  await expect(page.locator('.app-toast-success')).toHaveText(`Đã bỏ theo dõi ${companies[0].name}.`);
+  await expect(follow).toHaveAttribute('aria-pressed', 'false');
+  await page.clock.fastForward(5100);
+  await expect(page.locator('.app-toast')).toHaveCount(0);
+  fail = true;
+  await follow.click();
+  await expect(page.locator('.app-toast-error')).toHaveText('Không thể cập nhật theo dõi.');
+  await expect(follow).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('.app-toast-success')).toHaveCount(0);
 });

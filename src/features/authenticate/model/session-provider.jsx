@@ -8,24 +8,24 @@ export function SessionProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const version = useRef(0);
-  const restore = useRef(null);
   useEffect(() => {
-    let active = true;
+    const controller = new AbortController();
     const current = version.current;
-    restore.current ??= candidateAuth.me();
-    restore.current
+    const timer = setTimeout(() => { candidateAuth.me(controller.signal)
       .then((value) => {
-        if (active && current === version.current) setAccount(value);
+        if (!controller.signal.aborted && current === version.current) setAccount(value);
       })
       .catch((failure) => {
-        if (active && current === version.current && failure.status !== 401)
+        if (!controller.signal.aborted && current === version.current && failure.status !== 401)
           setError(failure.message);
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (!controller.signal.aborted && current === version.current) setLoading(false);
       });
+    }, 0);
     return () => {
-      active = false;
+      clearTimeout(timer);
+      controller.abort();
     };
   }, []);
   function signIn(value) {
@@ -58,7 +58,8 @@ export function SessionProvider({ children }) {
   }
   return (
     <SessionContext.Provider
-      value={{ account, loading, error, signIn, signOut }}
+      value={{ account, loading, error, signIn, signOut,
+        updateAvatar: avatarUrl => setAccount(current => current ? { ...current, avatarUrl } : current) }}
     >
       {children}
     </SessionContext.Provider>

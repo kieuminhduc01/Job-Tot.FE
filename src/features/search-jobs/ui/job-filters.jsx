@@ -24,7 +24,7 @@ export function JobFilters({ filters, onChange }) {
       </div>
       <select
         aria-label="Địa điểm"
-        className="h-10 rounded-md border bg-background px-3 text-sm"
+        className="h-10 rounded-[9px] border border-[#e2e8f0] bg-white pl-3 pr-9 text-[13px] font-medium text-[#263449] hover:border-[#ffb294] focus-visible:border-[#ff875a] focus-visible:shadow-[0_0_0_3px_rgba(255,87,34,0.12)] focus-visible:outline-none transition-colors cursor-pointer"
         value={filters.location}
         onChange={(event) => update("location", event.target.value)}
       >
@@ -35,7 +35,7 @@ export function JobFilters({ filters, onChange }) {
       </select>
       <select
         aria-label="Hình thức làm việc"
-        className="h-10 rounded-md border bg-background px-3 text-sm"
+        className="h-10 rounded-[9px] border border-[#e2e8f0] bg-white pl-3 pr-9 text-[13px] font-medium text-[#263449] hover:border-[#ffb294] focus-visible:border-[#ff875a] focus-visible:shadow-[0_0_0_3px_rgba(255,87,34,0.12)] focus-visible:outline-none transition-colors cursor-pointer"
         value={filters.type}
         onChange={(event) => update("type", event.target.value)}
       >

@@ -10,10 +10,13 @@ function CompanyJobs({ company }) {
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    companiesApi.jobs(company.id, page, controller.signal).then(data => {
-      setResult({ ...data, requestedPage: page }); setError("");
-    }).catch(failure => { if (!controller.signal.aborted) setError(failure.message); });
-    return () => controller.abort();
+    const timer = setTimeout(() => {
+      companiesApi.jobs(company.id, page, controller.signal).then(data => {
+        if (controller.signal.aborted) return;
+        setResult({ ...data, requestedPage: page }); setError("");
+      }).catch(failure => { if (!controller.signal.aborted) setError(failure.message); });
+    }, 0);
+    return () => { clearTimeout(timer); controller.abort(); };
   }, [company.id, page, attempt]);
   if (error) return <div role="alert">{error}<button className="company-text-button" onClick={() => setAttempt(x => x + 1)}>Thử lại</button></div>;
   if (!result || result.requestedPage !== page) return <p role="status">Đang tải việc làm…</p>;

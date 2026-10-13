@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { employerAuth } from "../api/employer-auth";
 import { candidateAuth } from "../api/candidate-auth";
 import {
   Dialog,
@@ -12,7 +13,7 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
 
-export function ForgotPasswordDialog() {
+export function ForgotPasswordDialog({ role = "candidate" }) {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
@@ -41,7 +42,7 @@ export function ForgotPasswordDialog() {
             setPending(true);
             setMessage("");
             try {
-              const result = await candidateAuth.forgotPassword(email.trim());
+              const result = await (role === "employer" ? employerAuth : candidateAuth).forgotPassword(email.trim());
               setMessage(result.message);
             } catch (failure) {
               setMessage(failure.message);
