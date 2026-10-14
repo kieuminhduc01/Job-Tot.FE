@@ -1,8 +1,10 @@
+import { Select } from "@/shared/ui/select";
 import { CareerResources } from "@/widgets/career-resources";
 import { useToast } from "@/shared/ui/toast-context";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Search, MapPin, Building2, BadgeCheck, BriefcaseBusiness, Flame, SlidersHorizontal, ArrowRight, ChevronLeft, ChevronRight, Users, ShieldCheck } from "lucide-react";
+import { Search, MapPin, Building2, BadgeCheck, BriefcaseBusiness, Flame, SlidersHorizontal, ArrowRight, ChevronRight, Users, ShieldCheck } from "lucide-react";
+import { Pagination } from "@/shared/ui/pagination";
 import { AuthHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { PageBreadcrumb } from "@/shared/ui/page-breadcrumb";
@@ -14,12 +16,6 @@ import "./companies.css";
 
 const sizes = [[1, 50, "1 – 50 nhân viên"], [51, 200, "51 – 200 nhân viên"], [201, 500, "201 – 500 nhân viên"], [501, 1000, "501 – 1.000 nhân viên"], [1001, "", "Trên 1.000 nhân viên"]];
 const number = value => Number(value || 0).toLocaleString("vi-VN");
-
-function CompanyPagination({ page, total, onPage }) {
-  if (total < 2) return null;
-  const pages = [...new Set([1, page - 1, page, page + 1, total].filter(x => x >= 1 && x <= total))].sort((a, b) => a - b);
-  return <nav className="company-pagination" aria-label="Phân trang doanh nghiệp"><button aria-label="Trang trước" disabled={page === 1} onClick={() => onPage(page - 1)}><ChevronLeft /></button>{pages.map((value, index) => <span className="company-page-slot" key={value}>{index > 0 && value - pages[index - 1] > 1 && <span>…</span>}<button aria-label={`Trang ${value}`} aria-current={value === page ? "page" : undefined} onClick={() => onPage(value)}>{value}</button></span>)}<button aria-label="Trang sau" disabled={page >= total} onClick={() => onPage(page + 1)}><ChevronRight /></button></nav>;
-}
 
 export function CompaniesPage() {
   const notify = useToast();
@@ -104,8 +100,8 @@ export function CompaniesPage() {
       <section className="company-intro"><div><p className="company-eyebrow"><Flame />HỆ THỐNG DOANH NGHIỆP XÁC THỰC TOÀN QUỐC 2026</p><h1>Khám phá doanh nghiệp & Nhà tuyển dụng hàng đầu</h1><p>Tìm hiểu văn hóa doanh nghiệp, chế độ đãi ngộ, môi trường làm việc và ứng tuyển ngay vào những vị trí phù hợp nhất.</p></div><div className="company-stat-grid">{[[Building2, stats?.totalCompanies, "Doanh nghiệp trong hệ thống", "orange"], [BriefcaseBusiness, stats?.openJobs, "Việc làm đang mở", "blue"], [BadgeCheck, stats?.verifiedCompanies, "Doanh nghiệp đã xác thực", "green"], [UsersIcon, stats?.hiringCompanies, "Doanh nghiệp đang tuyển", "purple"]].map(([Icon, value, label, color]) => <div className={`company-stat stat-${color}`} key={label}><Icon /><strong>{value == null ? "—" : number(value)}</strong><span>{label}</span></div>)}</div></section>
       <form className="company-search" onSubmit={event => { event.preventDefault(); update({ keyword: new FormData(event.currentTarget).get("keyword")?.trim() || "" }); document.getElementById("company-results")?.scrollIntoView({ behavior: "smooth" }); }}>
         <label className="company-search-keyword"><Search /><input key={params.get("keyword") || ""} name="keyword" defaultValue={params.get("keyword") || ""} maxLength={200} placeholder="Từ khóa công ty" aria-label="Từ khóa công ty" /></label>
-        <label><MapPin /><span>Địa điểm<select aria-label="Địa điểm" value={params.get("provinceId") || ""} onChange={event => update({ provinceId: event.target.value })}><option value="">Tất cả tỉnh, thành</option>{overview?.provinces.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></span></label>
-        <label><Building2 /><span>Ngành nghề<select aria-label="Ngành nghề" value={params.get("industryId") || ""} onChange={event => update({ industryId: event.target.value })}><option value="">Tất cả ngành nghề</option>{overview?.industries.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</select></span></label>
+        <label><MapPin /><span>Địa điểm<Select variant="embedded" aria-label="Địa điểm" value={params.get("provinceId") || ""} onChange={event => update({ provinceId: event.target.value })}><option value="">Tất cả tỉnh, thành</option>{overview?.provinces.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</Select></span></label>
+        <label><Building2 /><span>Ngành nghề<Select variant="embedded" aria-label="Ngành nghề" value={params.get("industryId") || ""} onChange={event => update({ industryId: event.target.value })}><option value="">Tất cả ngành nghề</option>{overview?.industries.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</Select></span></label>
         <button className="company-primary" type="submit"><Search />Tìm công ty</button>
       </form>
       {overviewError && <div className="company-error" role="alert">{overviewError}<button onClick={() => setAttempt(x => x + 1)}>Thử lại</button></div>}
@@ -119,7 +115,7 @@ export function CompaniesPage() {
       <section className="company-results"><div className="company-results-toolbar"><h2>Tìm thấy <em>{loading ? "…" : number(listing.totalCount)}</em> doanh nghiệp{filtered ? " phù hợp" : " đang hoạt động"}<small>Cập nhật những cơ hội việc làm mới nhất</small></h2><div className="company-sort">{[["relevant", "Phù hợp nhất"], ["jobs", "Nhiều việc làm nhất"], ["name", "Tên A – Z"]].map(([value, label]) => <button key={value} aria-pressed={sort === value} onClick={() => update({ sort: value })}>{label}</button>)}</div><button className="company-mobile-filter" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(x => !x)}><SlidersHorizontal />Bộ lọc</button></div>
         {error && <div className="company-error" role="alert">{error}<button onClick={() => setAttempt(x => x + 1)}>Thử lại</button></div>}
         {loading ? <div className="company-loading" role="status">Đang tải danh sách doanh nghiệp…{[1, 2, 3].map(value => <div className="company-skeleton" key={value} />)}</div> : !error && <>{listing.items.length ? <div className="company-list">{listing.items.map(company => card(company))}</div> : <div className="company-empty"><Building2 /><h3>{filtered ? "Không tìm thấy doanh nghiệp phù hợp" : "Chưa có doanh nghiệp trong hệ thống"}</h3><p>{filtered ? "Thử thay đổi từ khóa hoặc thiết lập lại bộ lọc." : "Danh sách sẽ được cập nhật khi doanh nghiệp được thêm vào hệ thống."}</p>{filtered && <button className="company-primary" onClick={() => setParams({})}>Xóa bộ lọc</button>}</div>}
-          {listing.totalCount > 0 && <div className="company-results-footer"><span>Hiển thị {(page - 1) * 10 + (listing.items.length ? 1 : 0)} – {Math.min(page * 10, listing.totalCount)} trong số {number(listing.totalCount)} công ty</span><CompanyPagination page={page} total={Math.ceil(listing.totalCount / 10)} onPage={value => update({ page: value })} /></div>}</>}
+          {listing.totalCount > 0 && <Pagination aria-label="Phân trang doanh nghiệp" page={page} totalPages={Math.ceil(listing.totalCount / 10)} onPageChange={value => update({ page: value })} info={`Hiển thị ${(page - 1) * 10 + (listing.items.length ? 1 : 0)} – ${Math.min(page * 10, listing.totalCount)} trong số ${number(listing.totalCount)} công ty`} />}</>}
       </section></div>
       <CareerResources />
     </main><AuthFooter />

@@ -7,6 +7,8 @@ import "@/shared/ui/select.css";
 import "@/shared/ui/site-layout.css";
 import "@/shared/ui/pagination.css";
 import "@/shared/ui/responsive.css";
+import "@/shared/ui/visual-system.css";
+import "@/shared/ui/vibrant-theme.css";
 import { SessionProvider, EmployerSessionProvider } from "@/features/authenticate";
 import { HeaderDataProvider } from "@/widgets/auth-header";
 

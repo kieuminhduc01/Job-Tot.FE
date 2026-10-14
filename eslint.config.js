@@ -71,6 +71,23 @@ const requestEffectRule = {
   },
 };
 
+const sharedUiRule = {
+  meta: {
+    type: "problem", schema: [],
+    messages: { primitive: "Use the shared {{component}} component so selection controls and tables stay consistent." },
+  },
+  create(context) {
+    const filename = context.filename.replaceAll("\\", "/");
+    return {
+      JSXOpeningElement(node) {
+        const component = { select: "Select", table: "Table" }[node.name.name];
+        if (!component || filename.endsWith(`/shared/ui/${node.name.name}.jsx`)) return;
+        context.report({ node, messageId: "primitive", data: { component } });
+      },
+    };
+  },
+};
+
 export default [
   { ignores: ["dist", "node_modules", "test-results", "playwright-report"] },
   {
@@ -87,6 +104,7 @@ export default [
       "react-refresh": reactRefresh,
       fsd: { rules: { boundaries: fsdRule } },
       "request-lifecycle": { rules: { "safe-fetch-effect": requestEffectRule } },
+      "shared-ui": { rules: { primitives: sharedUiRule } },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -100,6 +118,7 @@ export default [
       ],
       "fsd/boundaries": "error",
       "request-lifecycle/safe-fetch-effect": "error",
+      "shared-ui/primitives": "error",
     },
   },
   {

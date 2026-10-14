@@ -21,10 +21,10 @@
 
 @theme inline {
   --font-inter: "Inter", sans-serif;
-  --font-roboto: "Roboto", sans-serif;
+  --font-roboto: "Inter", "Roboto", sans-serif;
   /* Brand */
-  --color-auth-orange: #ff571b;
-  --color-auth-brand-hover: #ed4710;
+  --color-auth-orange: #d33c32;
+  --color-auth-brand-hover: #b92f27;
   --color-auth-brand-strong: #db430c;
   --color-auth-brand-focus: #ff875a;
 
@@ -39,7 +39,7 @@
 
   /* Text */
   --color-auth-ink: #102235;
-  --color-auth-muted: #66718a;
+  --color-auth-muted: #5c6c80;
   --color-auth-text-tab: #667087;
   --color-auth-text-selected: #263747;
   --color-auth-text-nav: #626c82;
@@ -99,16 +99,16 @@
   --color-popover-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
-  --color-secondary: #ecfdf5;
-  --color-secondary-foreground: #065f46;
-  --color-muted: #f1f5f4;
-  --color-muted-foreground: #64706c;
-  --color-accent: #ecfdf5;
-  --color-accent-foreground: #065f46;
+  --color-secondary: #fff1e9;
+  --color-secondary-foreground: #a83517;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #586a80;
+  --color-accent: #fff1e9;
+  --color-accent-foreground: #a83517;
   --color-destructive: #dc2626;
-  --color-border: #e2e8e5;
-  --color-input: #d7dfda;
-  --color-ring: #059669;
+  --color-border: #e2e8f0;
+  --color-input: #cbd5e1;
+  --color-ring: #d4451b;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -116,11 +116,11 @@
 }
 
 :root {
-  font-family: "Segoe UI", system-ui, sans-serif;
-  --background: #fafcfb;
-  --foreground: #172e25;
+  font-family: "Inter", "Roboto", system-ui, sans-serif;
+  --background: #f6f8fc;
+  --foreground: #172b43;
   --card: #ffffff;
-  --primary: #047857;
+  --primary: #d33c32;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

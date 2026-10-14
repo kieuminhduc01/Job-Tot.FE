@@ -1,3 +1,4 @@
+import { Select } from "@/shared/ui/select";
 import { useEmailAuthFlow } from "../model/use-email-auth-flow";
 import { EmailAuthFields } from "./email-auth-fields";
 import { useEffect, useRef, useState } from "react";
@@ -91,10 +92,10 @@ export function EmployerCredentialsForm({ mode }) {
         <AuthField name="taxCode" label="Mã số thuế doanh nghiệp (MST)" icon={ReceiptText} maxLength={14} placeholder="VD: 0109867899" {...field("taxCode")} />
         <div className="grid content-start gap-1.5">
           <Label htmlFor="headOfficeProvinceId" className="text-base text-auth-muted">Trụ sở chính <span className="text-auth-orange">*</span></Label>
-          <select id="headOfficeProvinceId" value={values.headOfficeProvinceId} onChange={event => change("headOfficeProvinceId", event.target.value)} disabled={provinceState !== "ready"} aria-invalid={Boolean(errors.headOfficeProvinceId)} aria-describedby={errors.headOfficeProvinceId ? "province-error" : undefined} className="h-[43px] w-full min-w-0 rounded-lg border border-input bg-auth-surface-input pl-3 pr-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-auth-orange disabled:opacity-60">
+          <Select id="headOfficeProvinceId" value={values.headOfficeProvinceId} onChange={event => change("headOfficeProvinceId", event.target.value)} disabled={provinceState !== "ready"} aria-invalid={Boolean(errors.headOfficeProvinceId)} aria-describedby={errors.headOfficeProvinceId ? "province-error" : undefined} className="h-[43px] w-full min-w-0 rounded-lg border border-input bg-auth-surface-input pl-3 pr-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-auth-orange disabled:opacity-60">
             <option value="">{provinceState === "loading" ? "Đang tải tỉnh/thành…" : "Chọn Tỉnh/Thành"}</option>
             {provinces.map(province => <option key={province.id} value={province.id}>{province.name}</option>)}
-          </select>
+          </Select>
           {errors.headOfficeProvinceId && <p id="province-error" className="text-xs text-auth-warning-text">{errors.headOfficeProvinceId}</p>}
           {(provinceState === "error" || provinceState === "empty") && <p role="status" className="text-xs text-auth-warning-text">{provinceState === "empty" ? "Chưa có dữ liệu tỉnh/thành. Vui lòng liên hệ hỗ trợ." : "Không tải được tỉnh/thành."} <button type="button" className="underline" onClick={() => { setProvinceState("loading"); setRetry(value => value + 1); }}>Thử lại</button></p>}
         </div>

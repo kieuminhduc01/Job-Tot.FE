@@ -54,3 +54,11 @@
   .cv-templates.cv-templates .cv-template-card > strong,
   .cv-templates.cv-templates .cv-template-card > span { min-width:0; overflow-wrap:anywhere; }
 }
+
+.cv-templates.cv-templates { margin-top:var(--space-section,64px); font-family:inherit; }
+.cv-templates.cv-templates .cv-templates-heading h2 { font-size:var(--text-section,24px); color:var(--ui-ink,#172b43); }
+.cv-templates.cv-templates .cv-templates-heading > div > p { font-size:12px; line-height:1.6; color:var(--ui-brand,#d4451b); }
+.cv-templates.cv-templates .cv-templates-primary { min-height:44px; border-radius:10px; background:var(--ui-brand,#d4451b); font-size:14px; }
+.cv-templates.cv-templates .cv-template-card > strong { font-size:14px; color:var(--ui-ink,#172b43); }
+.cv-templates.cv-templates .cv-template-card > span { font-size:12px; color:var(--ui-muted,#5d6d82); }
+.cv-templates.cv-templates .cv-template-preview { border-radius:10px; }

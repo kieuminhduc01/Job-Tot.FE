@@ -9,7 +9,6 @@ import {
   CalendarDays,
   Camera,
   CheckCircle2,
-  ChevronLeft,
   ChevronRight,
   Clock3,
   Eye,
@@ -26,6 +25,7 @@ import { AuthHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { CareerResources } from "@/widgets/career-resources";
 import { useToast } from "@/shared/ui/toast-context";
+import { Pagination } from "@/shared/ui/pagination";
 import { myJobsApi } from "../api/my-jobs";
 import { InterviewScheduleCard, InterviewCalendar } from "./interview-schedule";
 import { AppliedJobCard, UpcomingInterviewCard } from "./applied-job-card";
@@ -441,7 +441,7 @@ function CandidateJobs() {
                 </div>
               )}
               {data.totalCount > 0 && (
-                <Pagination
+                <MyJobsPagination
                   data={data}
                   onPage={(value) => setParams((current) => {
                     const next = new URLSearchParams(current);
@@ -578,23 +578,15 @@ function EmployerInterestCard({ interest, loadedAt }) {
     </article>
   );
 }
-function Pagination({ data, onPage }) {
-  const totalPages = Math.ceil(data.totalCount / data.pageSize);
-  const pages = [
-    ...new Set([
-      1,
-      ...[
-        data.page - 1,
-        data.page,
-        data.page + 1,
-        ...(data.page === 1 ? [2, 3, 4] : []),
-      ].filter((value) => value >= 1 && value <= totalPages),
-      totalPages,
-    ]),
-  ].sort((a, b) => a - b);
+function MyJobsPagination({ data, onPage }) {
   return (
-    <nav className="mj-pagination" aria-label="Phân trang việc làm của tôi">
-      <span>
+    <Pagination
+      className="ui-pagination--card"
+      aria-label="Phân trang việc làm của tôi"
+      page={data.page}
+      totalPages={Math.ceil(data.totalCount / data.pageSize)}
+      onPageChange={onPage}
+      info={<>
         Hiển thị {number((data.page - 1) * data.pageSize + 1)} –{" "}
         {number(Math.min(data.page * data.pageSize, data.totalCount))} trong
         tổng số {number(data.totalCount)}{" "}
@@ -605,35 +597,7 @@ function Pagination({ data, onPage }) {
             : data.tab === "interviews"
               ? "lịch phỏng vấn"
               : data.tab === "hired" ? "việc làm đã nhận việc" : "việc làm đã ứng tuyển"}
-      </span>
-      <div>
-        <button
-          aria-label="Trang trước"
-          disabled={data.page === 1}
-          onClick={() => onPage(data.page - 1)}
-        >
-          <ChevronLeft />
-        </button>
-        {pages.map((page, index) => (
-          <span key={page}>
-            {index > 0 && page > pages[index - 1] + 1 && <i>…</i>}
-            <button
-              aria-label={`Trang ${page}`}
-              aria-current={data.page === page ? "page" : undefined}
-              onClick={() => onPage(page)}
-            >
-              {page}
-            </button>
-          </span>
-        ))}
-        <button
-          aria-label="Trang sau"
-          disabled={data.page === totalPages}
-          onClick={() => onPage(data.page + 1)}
-        >
-          <ChevronRight />
-        </button>
-      </div>
-    </nav>
+      </>}
+    />
   );
 }

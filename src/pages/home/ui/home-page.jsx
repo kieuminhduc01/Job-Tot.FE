@@ -1,8 +1,9 @@
+import { Select } from "@/shared/ui/select";
 import { formatDate } from "@/shared/lib/date-format";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/shared/ui/toast-context";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, Clock3, MapPin, Search, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgeCheck, BriefcaseBusiness, Building2, Clock3, FileText, MapPin, Search, Sparkles } from "lucide-react";
 import { AuthHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { CareerResources } from "@/widgets/career-resources";
@@ -97,21 +98,32 @@ function HomeContent() {
     <title>Job Tốt | Tìm việc làm, kết nối doanh nghiệp và phát triển sự nghiệp</title>
     <AuthHeader userName={account?.fullName} loading={loading} />
     <main className="page-container">
-      <section className="home-hero" aria-labelledby="home-heading">
-        <p className="home-ai"><Sparkles />Job Search Engine đầu tiên do người Việt phát triển <span>· Chuẩn AI 2026</span></p>
-        <h1 id="home-heading">Tìm việc chuẩn xác, kết nối trực tiếp<br />với <Link to="/companies">{overview ? `${count(overview.stats.totalCompanies)} nhà tuyển dụng` : "nhà tuyển dụng"}</Link> hàng đầu</h1>
-        <p className="home-description">Tối ưu hóa hành trình nghề nghiệp với bộ lọc thông minh, {overview ? `khám phá ${count(overview.stats.openJobs)} việc làm ` : "khám phá cơ hội việc làm "}<br className="home-desktop-break" />toàn quốc và sàng lọc cơ hội lương cao, an toàn tuyệt đối.</p>
-      </section>
+      <div className="home-discovery">
+        <section className="home-hero" aria-labelledby="home-heading">
+          <p className="home-ai"><Sparkles />Cơ hội mới. Bước tiến mới.</p>
+          <h1 id="home-heading">Tìm việc bạn yêu thích, <span className="home-hero-emphasis">bắt nhịp tương lai.</span></h1>
+          <p className="home-description">Khám phá công việc từ {overview ? `${count(overview.stats.totalCompanies)} nhà tuyển dụng` : "các nhà tuyển dụng"}, tìm nơi phù hợp với bạn và tự tin cho bước tiến tiếp theo.</p>
+        </section>
       <form className="company-search home-search" onSubmit={event => {
         event.preventDefault(); const data = new FormData(event.currentTarget);
         setQuery({ keyword: data.get("keyword").trim(), provinceId: data.get("provinceId"), industryId: data.get("industryId") });
         setTab("all"); setError(""); resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }}>
         <label><Search /><input name="keyword" maxLength={200} placeholder="Từ khóa công việc" aria-label="Từ khóa công việc" /></label>
-        <label><MapPin /><span>ĐỊA ĐIỂM<select name="provinceId" aria-label="Địa điểm" disabled={!overview}><option value="">Tất cả tỉnh, thành</option>{overview?.provinces.map(province => <option key={province.id} value={province.id}>{province.name}</option>)}</select></span></label>
-        <label><BriefcaseBusiness /><span>NGÀNH NGHỀ<select name="industryId" aria-label="Ngành nghề"><option value="">Tất cả ngành nghề</option>{overview?.industries.map(industry => <option key={industry.id} value={industry.id}>{industry.name}</option>)}</select></span></label>
+        <label><MapPin /><span>ĐỊA ĐIỂM<Select variant="embedded" name="provinceId" aria-label="Địa điểm" disabled={!overview}><option value="">Tất cả tỉnh, thành</option>{overview?.provinces.map(province => <option key={province.id} value={province.id}>{province.name}</option>)}</Select></span></label>
+        <label><BriefcaseBusiness /><span>NGÀNH NGHỀ<Select variant="embedded" name="industryId" aria-label="Ngành nghề"><option value="">Tất cả ngành nghề</option>{overview?.industries.map(industry => <option key={industry.id} value={industry.id}>{industry.name}</option>)}</Select></span></label>
         <button className="company-primary" type="submit"><Search />Tìm việc ngay</button>
       </form>
+        <aside className="home-opportunity" aria-label="Khám phá cơ hội nghề nghiệp">
+          <div className="home-opportunity-heading"><span><Sparkles />HÀNH TRÌNH CỦA BẠN</span><ArrowUpRight aria-hidden="true" /></div>
+          <p className="home-opportunity-title">Một bước mới,<br />nhiều cơ hội hơn.</p>
+          <div className="home-opportunity-stats">
+            <Link to="/jobs"><BriefcaseBusiness aria-hidden="true" /><strong>{overview ? count(overview.stats.openJobs) : "Tìm việc"}</strong><span>{overview ? "việc làm đang mở" : "Khám phá việc làm"}</span></Link>
+            <Link to="/companies"><Building2 aria-hidden="true" /><strong>{overview ? count(overview.stats.totalCompanies) : "Kết nối"}</strong><span>nhà tuyển dụng</span></Link>
+          </div>
+          <Link className="home-opportunity-cv" to="/cv-templates"><span><FileText aria-hidden="true" />Làm mới CV, sẵn sàng tỏa sáng</span><ArrowRight aria-hidden="true" /></Link>
+        </aside>
+      </div>
       <section className="company-featured" aria-labelledby="home-companies">
         <div className="company-section-heading"><div><p><BriefcaseBusiness />ĐỐI TÁC TUYỂN DỤNG CHIẾN LƯỢC</p><h2 id="home-companies">Doanh nghiệp TOP đầu đang tuyển dụng</h2></div><Link className="company-text-button" to="/companies">Xem tất cả {overview && `${count(overview.stats.totalCompanies)} `}doanh nghiệp <ArrowRight /></Link></div>
         {overviewError ? <div role="alert" className="company-error">{overviewError}<button onClick={() => setAttempt(value => value + 1)}>Thử lại</button></div> : !overview ? <p role="status" className="home-muted">Đang tải doanh nghiệp…</p> : overview.featured.length ? <div className="company-featured-grid">{overview.featured.slice(0, 4).map(company => <CompanyCard key={company.id} company={company} featured followed={!!account && follows.accountId === account.id && follows.ids.includes(company.id)} pending={pending.includes(company.id) || (!!account && follows.accountId !== account.id)} onFollow={follow} onJobs={item => navigate(`/companies/${encodeURIComponent(item.id)}#company-open-jobs`)} />)}</div> : <p className="home-muted">Chưa có doanh nghiệp nổi bật.</p>}

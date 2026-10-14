@@ -1,3 +1,4 @@
+import { Select } from "@/shared/ui/select";
 import { formatDateTime } from "@/shared/lib/date-format";
 import { useToast } from "@/shared/ui/toast-context";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -19,8 +20,6 @@ import {
   Printer,
   Save,
   Trash2,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { AuthHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
@@ -35,6 +34,7 @@ import {
   CvSheet,
 } from "@/entities/cv";
 import { AdminLayout } from "@/widgets/admin-layout";
+import { Pagination } from "@/shared/ui/pagination";
 import "./cv-pages.css";
 
 const layoutNames = {
@@ -275,7 +275,7 @@ export function CvTemplatesPage() {
           />
         </label>
         <button type="submit">Tìm kiếm</button>
-        <select
+        <Select
           aria-label="Danh mục mẫu CV"
           value={category}
           onChange={(event) => update("category", event.target.value)}
@@ -284,15 +284,15 @@ export function CvTemplatesPage() {
           {categories.map((value) => (
             <option key={value}>{value}</option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Select
           aria-label="Sắp xếp mẫu CV"
           value={sort}
           onChange={(event) => update("sort", event.target.value)}
         >
           <option value="name">Theo tên mẫu</option>
           <option value="layout">Theo bố cục</option>
-        </select>
+        </Select>
       </form>
       <section id="cv-template-list" className="cv-template-list">
         <div className="cv-gallery-heading">
@@ -322,45 +322,13 @@ export function CvTemplatesPage() {
                 Không có mẫu phù hợp. Hãy thử từ khóa hoặc danh mục khác.
               </div>
             )}
-            <div className="cv-gallery-pagination">
-              <span>
-                Hiển thị {filtered.length ? (currentPage - 1) * 9 + 1 : 0}–
-                {Math.min(currentPage * 9, filtered.length)} trong{" "}
-                {filtered.length} mẫu CV
-              </span>
-              <nav aria-label="Phân trang mẫu CV">
-                <button
-                  aria-label="Trang trước"
-                  disabled={currentPage <= 1}
-                  onClick={() => changePage(currentPage - 1)}
-                >
-                  <ChevronLeft />
-                </button>
-                {Array.from({ length: totalPages }, (_, index) => index + 1)
-                  .filter(
-                    (value) =>
-                      value === 1 ||
-                      value === totalPages ||
-                      Math.abs(value - currentPage) <= 1,
-                  )
-                  .map((value) => (
-                    <button
-                      key={value}
-                      aria-current={value === currentPage ? "page" : undefined}
-                      onClick={() => changePage(value)}
-                    >
-                      {value}
-                    </button>
-                  ))}
-                <button
-                  aria-label="Trang sau"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => changePage(currentPage + 1)}
-                >
-                  <ChevronRight />
-                </button>
-              </nav>
-            </div>
+            <Pagination
+              aria-label="Phân trang mẫu CV"
+              page={currentPage}
+              totalPages={totalPages}
+              onPageChange={changePage}
+              info={`Hiển thị ${filtered.length ? (currentPage - 1) * 9 + 1 : 0}–${Math.min(currentPage * 9, filtered.length)} trong ${filtered.length} mẫu CV`}
+            />
           </>
         )}
       </section>
@@ -913,7 +881,7 @@ function AdminEditor({ initial, reload, onExpired }) {
           </label>
           <label>
             Trạng thái
-            <select
+            <Select
               value={draft.publicationState}
               onChange={(event) =>
                 setDraft({ ...draft, publicationState: event.target.value })
@@ -922,7 +890,7 @@ function AdminEditor({ initial, reload, onExpired }) {
               <option value="draft">Bản nháp</option>
               <option value="published">Xuất bản</option>
               <option value="hidden">Ẩn mẫu</option>
-            </select>
+            </Select>
           </label>
           <label className="cv-description-label">
             Mô tả

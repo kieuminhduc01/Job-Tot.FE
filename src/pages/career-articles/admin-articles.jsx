@@ -1,3 +1,4 @@
+import { Select } from "@/shared/ui/select";
 import { mediaUrl } from "@/shared/lib/media-url";
 import { formatDate } from "@/shared/lib/date-format";
 import { useEffect, useState } from 'react';
@@ -65,7 +66,7 @@ function Editor({ onExpired }) {
       <label>Tiêu đề<input required maxLength={200} value={draft.title} onChange={event => patch('title', event.target.value)} /></label>
       <label>Danh mục<input required maxLength={100} value={draft.category} onChange={event => patch('category', event.target.value)} /></label>
       <label>Mô tả ngắn<textarea required={draft.published} maxLength={600} rows={3} value={draft.summary} onChange={event => patch('summary', event.target.value)} /></label>
-      <label>Trạng thái<select value={draft.published ? 'published' : 'draft'} onChange={event => patch('published', event.target.value === 'published')}><option value="draft">Bản nháp / Ẩn bài</option><option value="published">Xuất bản</option></select></label>
+      <label>Trạng thái<Select value={draft.published ? 'published' : 'draft'} onChange={event => patch('published', event.target.value === 'published')}><option value="draft">Bản nháp / Ẩn bài</option><option value="published">Xuất bản</option></Select></label>
       <div className="article-cover-editor">
         <label>Ảnh bìa<input type="file" accept="image/png,image/jpeg" onChange={event => {
           const file = event.target.files?.[0];

@@ -1,10 +1,9 @@
+import { Select } from "@/shared/ui/select";
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   BriefcaseBusiness,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
   Search,
   ShieldCheck,
@@ -19,6 +18,7 @@ import { AuthHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { CareerResources } from "@/widgets/career-resources";
 import { ServiceNotice } from "@/shared/ui/service-notice";
+import { Pagination } from "@/shared/ui/pagination";
 import "./jobs.css";
 
 const pageSize = 6;
@@ -187,13 +187,6 @@ function JobDirectory({ savedOnly }) {
     );
   }
   const totalPages = Math.ceil((result?.totalCount || 0) / pageSize);
-  const pages = [
-    ...new Set(
-      [1, page - 1, page, page + 1, totalPages].filter(
-        (value) => value > 0 && value <= totalPages,
-      ),
-    ),
-  ].sort((a, b) => a - b);
   return (
     <div className="companies-page jobs-directory-page font-roboto">
       <title>
@@ -213,6 +206,7 @@ function JobDirectory({ savedOnly }) {
             ) : (
               <>
                 Tìm việc chuẩn xác, kết nối trực tiếp
+                {" "}
                 <br />
                 với{" "}
                 <Link to="/companies">
@@ -268,7 +262,7 @@ function JobDirectory({ savedOnly }) {
             <MapPin />
             <span>
               ĐỊA ĐIỂM
-              <select
+              <Select variant="embedded"
                 key={`${params.get("provinceId") || ""}|${!!locations}`}
                 name="provinceId"
                 aria-label="Địa điểm"
@@ -281,14 +275,14 @@ function JobDirectory({ savedOnly }) {
                     {option.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </span>
           </label>
           <label>
             <BriefcaseBusiness />
             <span>
               NGÀNH NGHỀ
-              <select
+              <Select variant="embedded"
                 key={`${params.get("industryId") || ""}|${!!locations}`}
                 name="industryId"
                 aria-label="Ngành nghề"
@@ -300,7 +294,7 @@ function JobDirectory({ savedOnly }) {
                     {option.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </span>
           </label>
           <button className="company-primary" type="submit">
@@ -452,61 +446,16 @@ function JobDirectory({ savedOnly }) {
                     />
                   ))}
                 </div>
-                <div className="job-directory-pagination">
-                  <span>
-                    Hiển thị {(page - 1) * pageSize + 1} –{" "}
-                    {Math.min(page * pageSize, result.totalCount)} trong tổng số{" "}
-                    {number(result.totalCount)} việc làm
-                  </span>
-                  <nav
-                    className="company-pagination"
-                    aria-label="Phân trang việc làm"
-                  >
-                    <button
-                      aria-label="Trang trước"
-                      disabled={page <= 1}
-                      onClick={() => {
-                        update({ page: page - 1 });
-                        resultsRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                    >
-                      <ChevronLeft />
-                    </button>
-                    {pages.map((value, index) => (
-                      <span className="company-page-slot" key={value}>
-                        {index > 0 && value - pages[index - 1] > 1 && (
-                          <span>…</span>
-                        )}
-                        <button
-                          aria-label={`Trang ${value}`}
-                          aria-current={page === value ? "page" : undefined}
-                          onClick={() => {
-                            update({ page: value });
-                            resultsRef.current?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }}
-                        >
-                          {value}
-                        </button>
-                      </span>
-                    ))}
-                    <button
-                      aria-label="Trang sau"
-                      disabled={page >= totalPages}
-                      onClick={() => {
-                        update({ page: page + 1 });
-                        resultsRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                    >
-                      <ChevronRight />
-                    </button>
-                  </nav>
-                </div>
+                <Pagination
+                  aria-label="Phân trang việc làm"
+                  page={page}
+                  totalPages={totalPages}
+                  info={`Hiển thị ${(page - 1) * pageSize + 1} – ${Math.min(page * pageSize, result.totalCount)} trong tổng số ${number(result.totalCount)} việc làm`}
+                  onPageChange={(value) => {
+                    update({ page: value });
+                    resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                />
               </>
             ) : (
               <div className="company-empty">

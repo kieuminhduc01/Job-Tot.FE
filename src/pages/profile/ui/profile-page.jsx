@@ -1,3 +1,4 @@
+import { Select } from "@/shared/ui/select";
 import { formatDate } from "@/shared/lib/date-format";
 import { FormInput } from "@/shared/ui/date-picker";
 import { useDemoDataset } from "@/shared/api/use-demo-dataset";
@@ -675,7 +676,7 @@ function AuthenticatedProfilePage() {
                   <label key={key}>
                     {label}
                     {editor.section === "preferences" && key === "workType" ? (
-                      <select
+                      <Select
                         required
                         disabled={busy}
                         value={
@@ -701,12 +702,12 @@ function AuthenticatedProfilePage() {
                             {value}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     ) : (editor.section === "preferences" &&
                         key === "desiredLocation") ||
                       (editor.section === "personal" && key === "location") ? (
                       <>
-                        <select
+                        <Select
                           required
                           disabled={busy || !provinces || !!provinceError}
                           value={
@@ -754,7 +755,7 @@ function AuthenticatedProfilePage() {
                               {province.name}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                         {provinceError && (
                           <span role="alert">
                             {provinceError}
@@ -770,7 +771,7 @@ function AuthenticatedProfilePage() {
                         )}
                       </>
                     ) : editor.section === "personal" && key === "gender" ? (
-                      <select
+                      <Select
                         required
                         disabled={busy}
                         value={
@@ -796,7 +797,7 @@ function AuthenticatedProfilePage() {
                             {value}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     ) : type === "textarea" ? (
                       <textarea
                         rows={6}

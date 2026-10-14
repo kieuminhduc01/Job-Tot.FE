@@ -1,6 +1,7 @@
 import { mediaUrl } from "@/shared/lib/media-url";
 import { CompanyMap } from "@/shared/ui/company-map";
 import { useEffect, useLayoutEffect, useState } from "react";
+import { Pagination } from "@/shared/ui/pagination";
 import { useToast } from "@/shared/ui/toast-context";
 import { Link, useLocation, useParams } from "react-router-dom";
 import {
@@ -423,26 +424,12 @@ function CompanyDetail({ id }) {
                         <p>Doanh nghiệp chưa có việc làm đang mở.</p>
                       )}
                       {jobs.totalCount > 10 && (
-                        <nav
-                          className="company-pagination"
+                        <Pagination
                           aria-label="Phân trang việc làm"
-                        >
-                          <button
-                            disabled={page === 1}
-                            onClick={() => setPage((x) => x - 1)}
-                          >
-                            Trước
-                          </button>
-                          <span>
-                            Trang {page} / {Math.ceil(jobs.totalCount / 10)}
-                          </span>
-                          <button
-                            disabled={page * 10 >= jobs.totalCount}
-                            onClick={() => setPage((x) => x + 1)}
-                          >
-                            Sau
-                          </button>
-                        </nav>
+                          page={page}
+                          totalPages={Math.ceil(jobs.totalCount / 10)}
+                          onPageChange={setPage}
+                        />
                       )}
                     </>
                   )}

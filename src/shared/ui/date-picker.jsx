@@ -1,3 +1,4 @@
+import { Select } from "@/shared/ui/select";
 import { useId, useState } from "react";
 import { Popover } from "radix-ui";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
@@ -58,8 +59,8 @@ export function DatePicker({ type = "date", value: rawValue = "", onChange, min,
     <Popover.Portal container={portalContainer}><Popover.Content className="date-picker-panel font-roboto" sideOffset={7} collisionPadding={12} aria-label="Chọn ngày">
       <div className="date-picker-heading">
         <button type="button" aria-label="Tháng trước" onClick={() => setMonth(new Date(first.getFullYear(), first.getMonth() - 1, 1))}><ChevronLeft /></button>
-        <select aria-label="Tháng" value={first.getMonth()} onChange={(event) => setMonth(new Date(first.getFullYear(), Number(event.target.value), 1))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>Tháng {index + 1}</option>)}</select>
-        <select aria-label="Năm" value={first.getFullYear()} onChange={(event) => setMonth(new Date(Number(event.target.value), first.getMonth(), 1))}>{Array.from({ length: 151 }, (_, index) => 1900 + index).map(year => <option key={year}>{year}</option>)}</select>
+        <Select density="compact" aria-label="Tháng" value={first.getMonth()} onChange={(event) => setMonth(new Date(first.getFullYear(), Number(event.target.value), 1))}>{Array.from({ length: 12 }, (_, index) => <option key={index} value={index}>Tháng {index + 1}</option>)}</Select>
+        <Select density="compact" aria-label="Năm" value={first.getFullYear()} onChange={(event) => setMonth(new Date(Number(event.target.value), first.getMonth(), 1))}>{Array.from({ length: 151 }, (_, index) => 1900 + index).map(year => <option key={year}>{year}</option>)}</Select>
         <button type="button" aria-label="Tháng sau" onClick={() => setMonth(new Date(first.getFullYear(), first.getMonth() + 1, 1))}><ChevronRight /></button>
       </div>
       <div className="date-picker-grid">{["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map(day => <span key={day}>{day}</span>)}
