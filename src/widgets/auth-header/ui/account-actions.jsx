@@ -1,7 +1,7 @@
 import { formatDate } from "@/shared/lib/date-format";
 import { candidateFetch } from "@/shared/api/candidate-session";
 import { employerFetch } from "@/shared/api/employer-session";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DropdownMenu } from "radix-ui";
 import { mediaUrl } from "@/shared/lib/media-url";
@@ -18,15 +18,16 @@ function ago(value) {
   return formatDate(value);
 }
 
-export function AccountActions({ role, userName }) {
+export function AccountActions({ role, userName, mode = "all" }) {
   const candidate = useCandidateSession();
   const employer = useEmployerSession();
   const session = role === "employer" ? employer : candidate;
   const account = session.account;
-  return <AccountActionsContent key={`${role}:${account?.id || userName}`} role={role} accountId={account?.id} accountAvatar={account?.avatarUrl} accountEmail={account?.email} signOut={session.signOut} userName={userName} />;
+  return <AccountActionsContent key={`${role}:${account?.id || userName}`} role={role} accountId={account?.id} accountAvatar={account?.avatarUrl} accountEmail={account?.email} signOut={session.signOut} userName={userName} mode={mode} />;
 }
 
-function AccountActionsContent({ role, accountAvatar, accountEmail, signOut, userName }) {
+function AccountActionsContent({ role, accountAvatar, accountEmail, signOut, userName, mode }) {
+  const notificationsId = useId();
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -69,9 +70,9 @@ function AccountActionsContent({ role, accountAvatar, accountEmail, signOut, use
   }
   const avatar = <span className="header-user-avatar">{avatarUrl && brokenAvatar !== avatarUrl ? <img key={avatarUrl} src={avatarUrl} alt={role === "employer" ? "Logo doanh nghiệp" : `Avatar của ${userName}`} onError={() => setBrokenAvatar(avatarUrl)} /> : role === "employer" ? <Building /> : <UserRound />}</span>;
   return <div className="header-account-actions" ref={root}>
-    <button type="button" className="header-action-icon" aria-label="Thông báo" aria-expanded={open} aria-controls="header-notifications" onClick={() => { setAccountOpen(false); if (!open) retry(); setOpen(value => !value); }}><Bell />{unread > 0 && <span className="header-action-count">{unread > 99 ? "99+" : unread}</span>}</button>
-    <Link className="header-action-icon" aria-label="Tin nhắn" to={role === "employer" ? "/employer/messages" : "/messages"}><MessageCircle />{messages > 0 && <span className="header-action-count">{messages > 99 ? "99+" : messages}</span>}</Link>
-    <DropdownMenu.Root open={accountOpen} onOpenChange={value => { setAccountOpen(value); if (value) setOpen(false); }}>
+    {mode !== "account" && <><button type="button" className="header-action-icon" aria-label="Thông báo" aria-expanded={open} aria-controls={open ? notificationsId : undefined} onClick={() => { setAccountOpen(false); if (!open) retry(); setOpen(value => !value); }}><Bell />{unread > 0 && <span className="header-action-count">{unread > 99 ? "99+" : unread}</span>}</button>
+    <Link className="header-action-icon" aria-label="Tin nhắn" to={role === "employer" ? "/employer/messages" : "/messages"}><MessageCircle />{messages > 0 && <span className="header-action-count">{messages > 99 ? "99+" : messages}</span>}</Link></>}
+    {mode !== "icons" && <DropdownMenu.Root open={accountOpen} onOpenChange={value => { setAccountOpen(value); if (value) setOpen(false); }}>
       <DropdownMenu.Trigger className="header-account-link header-account-trigger" aria-label={`Tài khoản của ${userName}`}>
         {avatar}<span className="header-user-name">{userName}</span><ChevronDown className="header-account-chevron" />
       </DropdownMenu.Trigger>
@@ -91,8 +92,8 @@ function AccountActionsContent({ role, accountAvatar, accountEmail, signOut, use
           <DropdownMenu.Item className="header-account-menu-item header-account-logout" disabled={loggingOut} onSelect={logout}><LogOut />{loggingOut ? "Đang đăng xuất…" : "Đăng xuất"}</DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-    {open && <section id="header-notifications" className="header-notifications" aria-label="Danh sách thông báo">
+    </DropdownMenu.Root>}
+    {open && <section id={notificationsId} className="header-notifications" aria-label="Danh sách thông báo">
       <div className="header-notifications-heading"><h2>Thông báo</h2><button type="button" disabled={!unread} onClick={() => mark(notices.map(item => item.id))}>Đánh dấu tất cả đã đọc</button></div>
       <div className="header-notifications-list">{readError && <p role="alert" className="header-notifications-empty">{readError}</p>}{error ? <div className="header-notifications-empty" role="alert">{error}<button onClick={() => retry()}>Thử lại</button></div> : !data ? <p className="header-notifications-empty" role="status">Đang tải thông báo…</p> : !notices.length ? <p className="header-notifications-empty">Bạn chưa có thông báo mới.</p> : notices.map(item => {
         const Icon = item.kind === "interview" ? CalendarDays : item.kind === "application" ? FileText : Eye;

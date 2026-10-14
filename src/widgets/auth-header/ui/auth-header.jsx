@@ -1,31 +1,33 @@
 import { Link } from "react-router-dom";
-import { FileText, Building, Wrench } from "lucide-react";
+import { Building } from "lucide-react";
 import { BrandLogo } from "@/shared/ui/brand-logo";
 import { Button } from "@/shared/ui/button";
 import { JobsMenu } from "@/shared/ui/jobs-menu";
+import { ToolsMenu } from "@/shared/ui/tools-menu";
 import { AccountActions } from "./account-actions";
+import { MobileMenu } from "./mobile-menu";
 
-export function AuthHeader({ userName, loading = false, authRole = "candidate", accountHref = "/profile", navigation, compactNavigation }) {
+export function AuthHeader({ userName, loading = false, authRole = "candidate", accountHref = "/profile", navigation }) {
   return (
-    <header className="h-[82px] border-b border-auth-text-footer-heading bg-white text-sm leading-normal text-auth-ink max-[700px]:h-[74px]">
-      <div className="mx-auto flex h-full max-w-[1284px] items-center justify-between gap-[22px] px-[34px] max-[950px]:px-6 max-[700px]:gap-2 max-[700px]:px-4">
+    <header className="responsive-header border-b border-auth-text-footer-heading bg-white text-sm leading-normal text-auth-ink">
+      <div className="responsive-header-inner mx-auto flex h-full max-w-[1284px] items-center justify-between">
         <BrandLogo />
         <nav
           className={`mx-auto flex items-center gap-5 max-[1150px]:gap-4 max-[1150px]:hidden [&_a]:flex [&_a]:items-center [&_a]:gap-[7px] [&_a]:whitespace-nowrap [&_a]:text-sm [&_a]:font-medium [&_a]:text-auth-muted [&_button]:flex [&_button]:items-center [&_button]:gap-[7px] [&_button]:text-base [&_svg]:size-[18px]`}
           aria-label="Điều hướng chính"
         >
           {navigation || <><JobsMenu />
-          <Link to="/companies"><Building />Doanh nghiệp</Link>
-            <Link to="/cv-templates" className="font-medium text-auth-muted">
-              <FileText />
-              Mẫu CV
-            </Link>
-          <Link to="/tools"><Wrench />Kho tiện ích</Link>
+          <ToolsMenu />
           </>}
         </nav>
-        <div className={`hidden max-[1150px]:block`}>{compactNavigation || <JobsMenu compact />}</div>
+        <div className="ml-auto hidden max-[1150px]:block">
+          <div className="mobile-header-actions">
+            {!loading && userName && <AccountActions role={authRole} userName={userName} mode="icons" />}
+            <MobileMenu navigation={navigation} userName={userName} loading={loading} authRole={authRole} accountActions={<AccountActions role={authRole} userName={userName} accountHref={accountHref} mode="account" />} />
+          </div>
+        </div>
         <nav
-          className="flex items-center gap-5 min-[701px]:whitespace-nowrap text-base font-bold max-[950px]:ml-auto max-[700px]:gap-3.5 max-[700px]:text-xs max-[380px]:gap-2"
+          className="flex items-center gap-5 whitespace-nowrap text-base font-bold max-[1150px]:hidden"
           aria-label="Tài khoản"
         >
           <Link

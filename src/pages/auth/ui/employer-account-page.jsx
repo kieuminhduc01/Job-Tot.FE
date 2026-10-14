@@ -4,7 +4,6 @@ import { useEmployerSession } from "@/features/authenticate";
 import { EmployerHeader } from "@/widgets/auth-header";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { CareerResources } from "@/widgets/career-resources";
-import { PageBreadcrumb } from "@/shared/ui/page-breadcrumb";
 import { Button } from "@/shared/ui/button";
 
 export function EmployerAccountPage() {
@@ -17,7 +16,6 @@ export function EmployerAccountPage() {
     <title>Tài khoản Nhà tuyển dụng | Job Tốt</title>
     <EmployerHeader userName={account?.fullName} />
     <main className="mx-auto max-w-[1284px] px-4 py-8 sm:px-8">
-      <PageBreadcrumb current="Tài khoản Nhà tuyển dụng" />
       {account ? <section className="mx-auto max-w-2xl rounded-2xl border bg-white p-6 sm:p-8">
         <h1 className="text-2xl font-bold">Xin chào, {account.fullName}</h1>
         <p className="mt-2 text-auth-muted">Thông tin tài khoản nhà tuyển dụng</p>

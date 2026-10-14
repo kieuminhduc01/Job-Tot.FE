@@ -4,3 +4,27 @@
 .page-breadcrumb nav strong{font-weight:600;color:#475569}
 .page-breadcrumb nav svg{width:17px;height:17px;flex-shrink:0}
 @media(max-width:800px){.page-breadcrumb .talent-banner{display:none}}
+
+.page-breadcrumb { min-width:0; max-width:100%; }
+.page-breadcrumb nav { min-width:0; }
+@media (max-width:600px) {
+  .page-breadcrumb { gap:10px; padding:16px 0; }
+  .page-breadcrumb nav {
+    flex:1;
+    gap:8px;
+    max-width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    font-size:12px;
+    line-height:24px;
+  }
+  .page-breadcrumb nav::-webkit-scrollbar { display:none; }
+  .page-breadcrumb nav > * { flex-shrink:0; }
+  .page-breadcrumb nav a { white-space:nowrap; }
+  .page-breadcrumb nav .breadcrumb-home { justify-content:center; min-width:24px; min-height:24px; }
+  .page-breadcrumb .breadcrumb-home > span { display:none; }
+  .page-breadcrumb nav svg { width:14px; height:14px; }
+  .page-breadcrumb nav strong { font-size:12px; }
+}

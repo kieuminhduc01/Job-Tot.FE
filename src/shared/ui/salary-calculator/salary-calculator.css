@@ -16,3 +16,25 @@
 .salary-page[data-salary-direction=net] .salary-tax-table tbody td:nth-child(5),
 .salary-page[data-salary-direction=net] .salary-tax-table tfoot td{color:#ff5722}
 .salary-page[data-salary-direction=net] .salary-guides article:nth-child(4)>svg{background:#f3edff;color:#9465ff}
+
+/* Keep intrinsic table and form widths inside the calculator, not the page. */
+.salary-page > main { width:100%; min-width:0; }
+.salary-calculator-grid > *, .salary-step-grid > *, .salary-box,
+.salary-field, .salary-insurance, .salary-regions { min-width:0; }
+.salary-tax-table { width:100%; min-width:0; max-width:100%; }
+@media (max-width:760px) {
+  .salary-calculator-grid, .salary-step-grid { grid-template-columns:minmax(0,1fr); }
+  .salary-deductions, .salary-regions > div { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .salary-deductions > *, .salary-insurance > label, .salary-regions label { min-width:0; }
+  .salary-field select:not([multiple]):not([size]) { max-width:100%; font-size:16px; }
+  .salary-rows > div { flex-wrap:wrap; }
+  .salary-rows dd { margin-left:auto; max-width:100%; white-space:normal; overflow-wrap:anywhere; text-align:right; }
+  .salary-direction button { min-width:0; min-height:44px; }
+  .salary-presets button { min-height:36px; }
+  .salary-guides nav { overflow-wrap:anywhere; }
+}
+@media (max-width:400px) {
+  .salary-deductions { grid-template-columns:minmax(0,1fr); }
+  .salary-insurance > label { flex-basis:100%; }
+  .salary-presets button { flex-basis:calc(50% - 6px); }
+}

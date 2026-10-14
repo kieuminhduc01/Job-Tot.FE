@@ -1,6 +1,6 @@
 import { DropdownMenu } from "radix-ui";
 import { Link } from "react-router-dom";
-import { BriefcaseBusiness, ChevronDown, Search, Bookmark, Wrench, MessageCircle } from "lucide-react";
+import { BriefcaseBusiness, Building, ChevronDown, Search, Bookmark } from "lucide-react";
 import "./jobs-menu.css";
 
 export function JobsMenu({ compact = false }) {
@@ -28,19 +28,16 @@ export function JobsMenu({ compact = false }) {
             </Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
+            <Link to="/companies" className="jobs-menu-item">
+              <Building />
+              Doanh nghiệp
+            </Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item asChild>
             <Link to="/top-industries" className="jobs-menu-item">
               <BriefcaseBusiness />
               Top ngành nghề
             </Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item asChild>
-            <Link to="/cv-templates" className="jobs-menu-item"><BriefcaseBusiness />Mẫu CV</Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item asChild>
-            <Link to="/tools" className="jobs-menu-item"><Wrench />Kho tiện ích</Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item asChild>
-            <Link to="/messages" className="jobs-menu-item"><MessageCircle />Tin nhắn</Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
             <Link to="/my-jobs" className="jobs-menu-item">

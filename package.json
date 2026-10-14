@@ -8,14 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "check": "npm run lint && npm run build",
-    "test:e2e": "playwright test",
-    "test:salary": "node --test model-tests/salary.test.js",
-    "test:request-lifecycle": "node --test model-tests/request-lifecycle.test.js"
+    "check": "npm run lint && npm run build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",
     "eslint": "^10.11.0",
