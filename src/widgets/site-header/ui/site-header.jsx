@@ -7,12 +7,7 @@ import { useState } from "react";
 import { useCandidateSession } from "@/features/authenticate";
 
 export function SiteHeader() {
-  const {
-    account,
-    loading,
-    error: sessionError,
-    signOut,
-  } = useCandidateSession();
+  const { account, loading, error: sessionError, signOut } = useCandidateSession();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   async function logout() {
@@ -29,19 +24,13 @@ export function SiteHeader() {
   return (
     <header className="border-b bg-background">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-5 px-6 py-5">
-        <Link
-          to="/jobs"
-          className="flex items-center gap-2 text-xl font-bold tracking-tight"
-        >
+        <Link to="/jobs" className="flex items-center gap-2 text-xl font-bold tracking-tight">
           <span className="rounded-lg bg-emerald-700 p-2 text-white">
             <BriefcaseBusiness className="size-5" />
           </span>
           TalentHub<span className="text-emerald-600">.</span>
         </Link>
-        <nav
-          aria-label="Điều hướng chính"
-          className="flex gap-6 text-sm font-medium"
-        >
+        <nav aria-label="Điều hướng chính" className="flex gap-6 text-sm font-medium">
           <JobsMenu />
           <ToolsMenu />
           {[

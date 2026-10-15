@@ -5,6 +5,7 @@
 Authenticated users search active accounts by name and start a one-to-one conversation. Candidate/candidate, candidate/employer and employer/employer conversations use the same API and data model. Search results contain names and account roles, without email or phone numbers.
 
 Routes: `api/candidate/messages` and `api/employer/messages`.
+
 - GET root: latest 100 conversations belonging to the current account.
 - GET people?q=...: up to 20 accounts, minimum two-character query.
 - POST root: create or reuse a conversation with the specified accountId.

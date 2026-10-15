@@ -18,14 +18,9 @@ export function JobCard({ job, action }) {
         </div>
         <h2 className="mb-3 text-lg font-semibold tracking-tight">
           {job.title}
-          <ArrowUpRight
-            aria-hidden="true"
-            className="ml-1 inline size-4 text-emerald-600"
-          />
+          <ArrowUpRight aria-hidden="true" className="ml-1 inline size-4 text-emerald-600" />
         </h2>
-        <p className="mb-5 min-h-15 text-sm leading-6 text-muted-foreground">
-          {job.description}
-        </p>
+        <p className="mb-5 min-h-15 text-sm leading-6 text-muted-foreground">{job.description}</p>
         <div className="mb-5 flex flex-wrap gap-2">
           {job.tags.map((tag) => (
             <Badge key={tag} variant="outline" className="font-normal">

@@ -10,6 +10,12 @@ const tabs = [
 
 export function RecruitmentTabs({ active }) {
   const icons = [UsersRound, Bookmark, FileText, CalendarDays];
-  return <SectionTabs className="er-tabs" label="Quản lý tuyển dụng" active={active}
-    items={tabs.map(([value, to, label], index) => ({ value, to, label, icon: icons[index] }))} />;
+  return (
+    <SectionTabs
+      className="er-tabs"
+      label="Quản lý tuyển dụng"
+      active={active}
+      items={tabs.map(([value, to, label], index) => ({ value, to, label, icon: icons[index] }))}
+    />
+  );
 }

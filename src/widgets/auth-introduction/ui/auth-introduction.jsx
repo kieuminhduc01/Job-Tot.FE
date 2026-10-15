@@ -2,7 +2,7 @@ import { useDemoDataset } from "@/shared/api/use-demo-dataset";
 import { Card } from "@/shared/ui/card";
 import { benefits } from "../model/content";
 
-function CareerStats({stats}) {
+function CareerStats({ stats }) {
   return (
     <Card className="mt-[33px] grid h-[88px] grid-cols-3 gap-0 rounded-2xl border bg-white px-4 py-[15px] shadow-none max-[700px]:mt-6 [&>div]:flex [&>div]:flex-col [&>div]:justify-center [&>div]:p-2 [&>div+div]:border-l [&>div+div]:border-auth-border-divider text-base  [&_strong]:text-xl [&_span]: [&_span]:text-auth-text-secondary">
       {stats.map(([value, label, tone]) => (
@@ -49,7 +49,7 @@ function BenefitCard({ item }) {
   );
 }
 
-function CandidateTestimonial({testimony}) {
+function CandidateTestimonial({ testimony }) {
   return (
     <Card className="mt-6 min-h-[164px] gap-3 rounded-2xl border bg-white p-5 shadow-[0_1px_2px_var(--color-auth-shadow-soft)] max-[700px]:p-4 [&_blockquote]:m-0 [&_blockquote]:text-base [&_blockquote]:leading-[19px] [&_blockquote]:italic [&_blockquote]:text-auth-muted">
       <div className="flex items-center gap-3 max-[950px]:flex-wrap max-[700px]:flex-nowrap [&_img]:size-12 [&_img]:rounded-full [&_img]:object-cover [&_strong]:text-sm [&_strong]:font-bold [&_p]:m-0 [&_p]:text-base [&_p]:text-auth-muted max-[700px]:[&_p]:text-xs">
@@ -71,7 +71,7 @@ function CandidateTestimonial({testimony}) {
 }
 
 export function AuthIntroduction() {
-  const data=useDemoDataset("auth-introduction");
+  const data = useDemoDataset("auth-introduction");
   return (
     <section
       className="min-[1100px]:min-h-[893px] max-[700px]:mt-1 [&_h1]:font-inter [&_h1]:mt-7 [&_h1]:mb-[9px] [&_h1]:text-5xl [&_h1]:leading-[1.2] [&_h1]:tracking-[-1.5px] [&_h1]:font-extrabold [&_h1_span]:text-auth-orange max-[1150px]:[&_h1]:text-4xl max-[950px]:[&_h1]:text-3xl max-[700px]:[&_h1]:mt-[22px] max-[700px]:[&_h1]:text-4xl max-[380px]:[&_h1]:text-3xl"
@@ -86,9 +86,9 @@ export function AuthIntroduction() {
         cùng <span>Job Tốt</span>
       </h1>
       <p className="m-0 text-lg leading-[26px] tracking-[-0.3px] text-auth-muted max-[950px]:text-base max-[950px]:leading-6 [&_strong]:font-bold [&_strong]:text-auth-ink [&_b]:font-bold [&_b]:text-auth-orange">
-        Gia nhập cộng đồng hơn <strong>{data?.candidates || ""}</strong> ứng viên và tiếp cận
-        ngay <b>{data?.jobs || ""}</b> việc làm chất lượng cao từ các tập đoàn công nghệ &
-        doanh nghiệp hàng đầu.
+        Gia nhập cộng đồng hơn <strong>{data?.candidates || ""}</strong> ứng viên và tiếp cận ngay{" "}
+        <b>{data?.jobs || ""}</b> việc làm chất lượng cao từ các tập đoàn công nghệ & doanh nghiệp
+        hàng đầu.
       </p>
       {data && <CareerStats stats={data.stats} />}
       <div className="mt-6 grid gap-3.5">

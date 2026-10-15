@@ -1,1 +1,1 @@
-export { SocialInsurancePage } from './ui/social-insurance-page';
+export { SocialInsurancePage } from "./ui/social-insurance-page";

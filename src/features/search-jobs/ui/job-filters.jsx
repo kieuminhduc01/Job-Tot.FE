@@ -11,10 +11,7 @@ export function JobFilters({ filters, onChange }) {
       className="flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm md:flex-row"
     >
       <div className="relative flex-1">
-        <Search
-          aria-hidden="true"
-          className="absolute top-3 left-3 size-4 text-muted-foreground"
-        />
+        <Search aria-hidden="true" className="absolute top-3 left-3 size-4 text-muted-foreground" />
         <Input
           aria-label="Tìm theo vị trí, công ty hoặc kỹ năng"
           placeholder="Vị trí, công ty hoặc kỹ năng..."

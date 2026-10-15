@@ -11,17 +11,19 @@ export function SessionProvider({ children }) {
   useEffect(() => {
     const controller = new AbortController();
     const current = version.current;
-    const timer = setTimeout(() => { candidateAuth.me(controller.signal)
-      .then((value) => {
-        if (!controller.signal.aborted && current === version.current) setAccount(value);
-      })
-      .catch((failure) => {
-        if (!controller.signal.aborted && current === version.current && failure.status !== 401)
-          setError(failure.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted && current === version.current) setLoading(false);
-      });
+    const timer = setTimeout(() => {
+      candidateAuth
+        .me(controller.signal)
+        .then((value) => {
+          if (!controller.signal.aborted && current === version.current) setAccount(value);
+        })
+        .catch((failure) => {
+          if (!controller.signal.aborted && current === version.current && failure.status !== 401)
+            setError(failure.message);
+        })
+        .finally(() => {
+          if (!controller.signal.aborted && current === version.current) setLoading(false);
+        });
     }, 0);
     return () => {
       clearTimeout(timer);
@@ -42,7 +44,7 @@ export function SessionProvider({ children }) {
       setError("");
       setLoading(false);
     };
-    const changed = event => {
+    const changed = (event) => {
       if (event.key === "jobtot.candidate.tokens" && !event.newValue) ended();
     };
     window.addEventListener("candidate-session-ended", ended);
@@ -53,13 +55,23 @@ export function SessionProvider({ children }) {
     };
   }, []);
   async function signOut() {
-    try { await candidateAuth.logout(); }
-    finally { signIn(null); }
+    try {
+      await candidateAuth.logout();
+    } finally {
+      signIn(null);
+    }
   }
   return (
     <SessionContext.Provider
-      value={{ account, loading, error, signIn, signOut,
-        updateAvatar: avatarUrl => setAccount(current => current ? { ...current, avatarUrl } : current) }}
+      value={{
+        account,
+        loading,
+        error,
+        signIn,
+        signOut,
+        updateAvatar: (avatarUrl) =>
+          setAccount((current) => (current ? { ...current, avatarUrl } : current)),
+      }}
     >
       {children}
     </SessionContext.Provider>

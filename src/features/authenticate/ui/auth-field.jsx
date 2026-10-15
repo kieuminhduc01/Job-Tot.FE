@@ -17,10 +17,7 @@ export function AuthField({
   return (
     <div>
       <div className={`flex min-h-4 items-center justify-between gap-2 mb-1`}>
-        <Label
-          htmlFor={name}
-          className={`gap-[3px] text-auth-muted normal-case text-base`}
-        >
+        <Label htmlFor={name} className={`gap-[3px] text-auth-muted normal-case text-base`}>
           {label} <span className="text-auth-orange">*</span>
         </Label>
         {trailing}
@@ -45,11 +42,7 @@ export function AuthField({
             variant="ghost"
             size="icon"
             className="absolute right-1 top-[5px] h-9 w-[34px] text-auth-text-icon [&_svg]:size-[18px]"
-            aria-label={
-              visible
-                ? `Ẩn ${label.toLowerCase()}`
-                : `Hiện ${label.toLowerCase()}`
-            }
+            aria-label={visible ? `Ẩn ${label.toLowerCase()}` : `Hiện ${label.toLowerCase()}`}
             aria-pressed={visible}
             onClick={() => setVisible(!visible)}
           >

@@ -30,12 +30,7 @@ import {
 } from "lucide-react";
 import { PageBreadcrumb } from "@/shared/ui/page-breadcrumb";
 import { AuthHeader } from "@/widgets/auth-header";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/shared/ui/dialog";
 import { AuthFooter } from "@/widgets/auth-footer";
 import { ServiceNotice } from "@/shared/ui/service-notice";
 import { useCandidateSession } from "@/features/authenticate";
@@ -45,12 +40,7 @@ import { AvatarEditor } from "./avatar-editor";
 import "./profile.css";
 
 const sections = [
-  [
-    "experiences",
-    "Kinh nghiệm làm việc",
-    "Thêm kinh nghiệm",
-    BriefcaseBusiness,
-  ],
+  ["experiences", "Kinh nghiệm làm việc", "Thêm kinh nghiệm", BriefcaseBusiness],
   ["skills", "Kỹ năng & Đánh giá năng lực", "Thêm kỹ năng", Award],
   ["education", "Học vấn & Đào tạo", "Thêm học vấn", GraduationCap],
   ["certificates", "Chứng chỉ quốc tế", "Thêm chứng chỉ", Award],
@@ -70,12 +60,7 @@ const personalFields = [
   ["birthDate", "Ngày sinh", "date"],
   ["gender", "Giới tính", "text"],
 ];
-const workTypes = [
-  "Toàn thời gian",
-  "Bán thời gian",
-  "Làm việc từ xa",
-  "Kết hợp (Hybrid)",
-];
+const workTypes = ["Toàn thời gian", "Bán thời gian", "Làm việc từ xa", "Kết hợp (Hybrid)"];
 const normalizeProvince = (value) =>
   (value || "")
     .replace(/^(Thành phố|Tỉnh)\s+/i, "")
@@ -100,7 +85,7 @@ function AuthenticatedProfilePage() {
   const notify = useToast();
   const { account, loading: sessionLoading, updateAvatar } = useCandidateSession();
   const accountId = account?.id;
-  const demo=useDemoDataset("profile", !sessionLoading && !account);
+  const demo = useDemoDataset("profile", !sessionLoading && !account);
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -156,7 +141,7 @@ function AuthenticatedProfilePage() {
     setError("");
     try {
       const saved = await profileApi.save(next);
-      setData(current => ({ ...saved, activity: saved.activity ?? current?.activity }));
+      setData((current) => ({ ...saved, activity: saved.activity ?? current?.activity }));
       notify("Đã lưu hồ sơ thành công.");
       return true;
     } catch (failure) {
@@ -173,9 +158,7 @@ function AuthenticatedProfilePage() {
       return;
     }
     const values =
-      section === "personal" ||
-      section === "preferences" ||
-      section === "summary"
+      section === "personal" || section === "preferences" || section === "summary"
         ? { ...profile }
         : index === null
           ? {
@@ -197,14 +180,9 @@ function AuthenticatedProfilePage() {
         (province) =>
           province.id === values.desiredProvinceId ||
           (!values.desiredProvinceId &&
-            normalizeProvince(province.name) ===
-              normalizeProvince(values.desiredLocation)),
+            normalizeProvince(province.name) === normalizeProvince(values.desiredLocation)),
       );
-      if (
-        !workTypes.includes(values.workType) ||
-        !selectedProvince ||
-        provinceError
-      ) {
+      if (!workTypes.includes(values.workType) || !selectedProvince || provinceError) {
         notify("Vui lòng chọn hình thức làm việc và tỉnh/thành phố có sẵn.", {
           type: "error",
         });
@@ -218,14 +196,9 @@ function AuthenticatedProfilePage() {
         (province) =>
           province.id === values.provinceId ||
           (!values.provinceId &&
-            normalizeProvince(province.name) ===
-              normalizeProvince(values.location)),
+            normalizeProvince(province.name) === normalizeProvince(values.location)),
       );
-      if (
-        !selectedProvince ||
-        provinceError ||
-        !["Nam", "Nữ", "Khác"].includes(values.gender)
-      ) {
+      if (!selectedProvince || provinceError || !["Nam", "Nữ", "Khác"].includes(values.gender)) {
         notify("Vui lòng chọn tỉnh/thành phố và giới tính có sẵn.", {
           type: "error",
         });
@@ -235,8 +208,7 @@ function AuthenticatedProfilePage() {
       values.location = selectedProvince.name;
     }
     let next = { ...profile };
-    if (["personal", "preferences", "summary"].includes(section))
-      next = { ...next, ...values };
+    if (["personal", "preferences", "summary"].includes(section)) next = { ...next, ...values };
     else {
       next[section] = [...next[section]];
       if (index === null) next[section].push(values);
@@ -248,10 +220,7 @@ function AuthenticatedProfilePage() {
     const file = event.target.files[0];
     event.target.value = "";
     if (!file) return;
-    if (
-      file.size > 5 * 1024 * 1024 ||
-      !file.name.toLowerCase().endsWith(".pdf")
-    ) {
+    if (file.size > 5 * 1024 * 1024 || !file.name.toLowerCase().endsWith(".pdf")) {
       notify("Chọn tệp PDF tối đa 5 MB.", { type: "error" });
       return;
     }
@@ -283,14 +252,13 @@ function AuthenticatedProfilePage() {
       <main className="page-container profile-container">
         <PageBreadcrumb current="Hồ sơ cá nhân">
           <span className="talent-banner">
-            🔥 Hơn 2.500.000+ ứng viên tài CV và trúng tuyển tại FPT, Viettel,
-            Vingroup, Big4
+            🔥 Hơn 2.500.000+ ứng viên tài CV và trúng tuyển tại FPT, Viettel, Vingroup, Big4
           </span>
         </PageBreadcrumb>
         {preview && !sessionLoading && (
           <div className="profile-message">
-            Đây là hồ sơ mẫu theo thiết kế. <Link to="/login">Đăng nhập</Link>{" "}
-            để quản lý hồ sơ cá nhân của bạn.
+            Đây là hồ sơ mẫu theo thiết kế. <Link to="/login">Đăng nhập</Link> để quản lý hồ sơ cá
+            nhân của bạn.
           </div>
         )}
         {error && (
@@ -322,13 +290,21 @@ function AuthenticatedProfilePage() {
                     {profile.avatarUrl ? (
                       <img src={mediaUrl(profile.avatarUrl)} alt="Ảnh đại diện của bạn" />
                     ) : (
-                      <span className="profile-avatar-placeholder"><UserRound aria-hidden="true" /></span>
+                      <span className="profile-avatar-placeholder">
+                        <UserRound aria-hidden="true" />
+                      </span>
                     )}
                     <CheckCircle2 />
                     <AvatarEditor
                       avatarUrl={profile.avatarUrl}
                       fullName={profile.fullName}
-                      onSaved={value => { setData(current => ({ ...value, activity: value.activity ?? current?.activity })); updateAvatar(value.profile.avatarUrl); }}
+                      onSaved={(value) => {
+                        setData((current) => ({
+                          ...value,
+                          activity: value.activity ?? current?.activity,
+                        }));
+                        updateAvatar(value.profile.avatarUrl);
+                      }}
                       disabled={busy}
                     />
                   </div>
@@ -345,13 +321,9 @@ function AuthenticatedProfilePage() {
                     <h2>{profile.headline || "Thêm chức danh của bạn"}</h2>
                     <p>
                       <Mail />
-                      {preview
-                        ? demo?.email || ""
-                        : data.email || "Chưa có email"}
+                      {preview ? demo?.email || "" : data.email || "Chưa có email"}
                       <Phone />
-                      {preview
-                        ? demo?.phone || ""
-                        : data.phone || "Chưa có số điện thoại"}
+                      {preview ? demo?.phone || "" : data.phone || "Chưa có số điện thoại"}
                     </p>
                     <p>
                       <MapPin />
@@ -376,10 +348,7 @@ function AuthenticatedProfilePage() {
                         </span>
                         Giới thiệu bản thân
                       </h2>
-                      <button
-                        aria-label="Chỉnh sửa giới thiệu"
-                        onClick={() => edit("summary")}
-                      >
+                      <button aria-label="Chỉnh sửa giới thiệu" onClick={() => edit("summary")}>
                         <Pencil />
                       </button>
                     </div>
@@ -399,31 +368,19 @@ function AuthenticatedProfilePage() {
                           </span>
                           {title}
                         </h2>
-                        <button
-                          className="add-button"
-                          onClick={() => edit(key)}
-                        >
+                        <button className="add-button" onClick={() => edit(key)}>
                           <Plus />
                           {add}
                         </button>
                       </div>
-                      <div
-                        className={
-                          key === "certificates"
-                            ? "certificate-grid"
-                            : "entry-list"
-                        }
-                      >
+                      <div className={key === "certificates" ? "certificate-grid" : "entry-list"}>
                         {profile[key].length === 0 && (
                           <p className="empty-section">
                             Chưa có thông tin. Thêm để hoàn thiện hồ sơ của bạn.
                           </p>
                         )}
                         {profile[key].map((entry, index) => (
-                          <article
-                            className={`profile-entry ${key}`}
-                            key={index}
-                          >
+                          <article className={`profile-entry ${key}`} key={index}>
                             {key === "skills" ? (
                               <CheckCircle2 className="skill-check" />
                             ) : key === "certificates" ? (
@@ -434,9 +391,7 @@ function AuthenticatedProfilePage() {
                             <div className="entry-top">
                               <h3>{entry.title}</h3>
                               {key !== "certificates" && (
-                                <span className="entry-period">
-                                  {entry.period}
-                                </span>
+                                <span className="entry-period">{entry.period}</span>
                               )}
                               <button
                                 aria-label={`Chỉnh sửa ${entry.title}`}
@@ -446,14 +401,10 @@ function AuthenticatedProfilePage() {
                               </button>
                             </div>
                             {entry.organization && (
-                              <p className="entry-organization">
-                                {entry.organization}
-                              </p>
+                              <p className="entry-organization">{entry.organization}</p>
                             )}
                             {key === "certificates" && (
-                              <p className="certificate-period">
-                                Hiệu lực: {entry.period}
-                              </p>
+                              <p className="certificate-period">Hiệu lực: {entry.period}</p>
                             )}
                             {entry.description &&
                               (key === "experiences" ? (
@@ -469,9 +420,7 @@ function AuthenticatedProfilePage() {
                                     ))}
                                 </ul>
                               ) : (
-                                <p className="entry-description">
-                                  {entry.description}
-                                </p>
+                                <p className="entry-description">{entry.description}</p>
                               ))}
                             {entry.tags && (
                               <div className="entry-tags">
@@ -497,9 +446,7 @@ function AuthenticatedProfilePage() {
                         CV đính kèm chính
                       </h2>
                       <span className="green-label">
-                        {data?.cvs?.length || preview
-                          ? "Đang kích hoạt"
-                          : "Chưa có CV"}
+                        {data?.cvs?.length || preview ? "Đang kích hoạt" : "Chưa có CV"}
                       </span>
                     </div>
                     {preview ? (
@@ -512,29 +459,61 @@ function AuthenticatedProfilePage() {
                       </div>
                     ) : (
                       data.cvs.map((cv) => (
-                        <div className={`cv-document cv-file-card${cv.isDefault ? " is-default" : ""}`} key={cv.id}>
+                        <div
+                          className={`cv-document cv-file-card${cv.isDefault ? " is-default" : ""}`}
+                          key={cv.id}
+                        >
                           <div className="cv-file-heading">
-                            <span className="cv-file-icon"><FileText /></span>
+                            <span className="cv-file-icon">
+                              <FileText />
+                            </span>
                             <div className="cv-file-identity">
                               <strong>{cv.title}</strong>
                               <p>{cv.isOnline ? "Job Tốt CV Studio" : "Tài liệu PDF"}</p>
                             </div>
                           </div>
                           <span className={`cv-file-badge${cv.isDefault ? " is-default" : ""}`}>
-                            {cv.isDefault && <CheckCircle2 />}{cv.isDefault ? "CV chính" : "CV bổ sung"}
+                            {cv.isDefault && <CheckCircle2 />}
+                            {cv.isDefault ? "CV chính" : "CV bổ sung"}
                           </span>
                           <div className="cv-file-actions">
-                            {cv.isOnline ? <Link className="cv-file-primary" to={`/my-cvs/${cv.id}/edit`}><Pencil />Chỉnh sửa CV online</Link> : <button
-                              className="cv-file-primary"
+                            {cv.isOnline ? (
+                              <Link className="cv-file-primary" to={`/my-cvs/${cv.id}/edit`}>
+                                <Pencil />
+                                Chỉnh sửa CV online
+                              </Link>
+                            ) : (
+                              <button
+                                className="cv-file-primary"
+                                type="button"
+                                onClick={() =>
+                                  downloadCv(cv).catch((failure) => setError(failure.message))
+                                }
+                              >
+                                <Download />
+                                Tải xuống
+                              </button>
+                            )}
+                            <button
+                              className="cv-file-secondary"
                               type="button"
-                              onClick={() => downloadCv(cv).catch((failure) => setError(failure.message))}
-                            ><Download />Tải xuống</button>}
-                            <button className="cv-file-secondary" type="button" disabled={busy} onClick={async () => {
-                              setBusy(true); setError("");
-                              try { const cvs = await profileApi.setDefault(cv.id, !cv.isDefault); setData(current => ({ ...current, cvs })); notify("Đã cập nhật loại CV."); }
-                              catch (failure) { setError(failure.message); }
-                              finally { setBusy(false); }
-                            }}>{cv.isDefault ? "Đặt làm CV bổ sung" : "Đặt làm CV chính"}</button>
+                              disabled={busy}
+                              onClick={async () => {
+                                setBusy(true);
+                                setError("");
+                                try {
+                                  const cvs = await profileApi.setDefault(cv.id, !cv.isDefault);
+                                  setData((current) => ({ ...current, cvs }));
+                                  notify("Đã cập nhật loại CV.");
+                                } catch (failure) {
+                                  setError(failure.message);
+                                } finally {
+                                  setBusy(false);
+                                }
+                              }}
+                            >
+                              {cv.isDefault ? "Đặt làm CV bổ sung" : "Đặt làm CV chính"}
+                            </button>
                           </div>
                         </div>
                       ))
@@ -545,10 +524,7 @@ function AuthenticatedProfilePage() {
                         : "PDF tối đa 5 MB • Chỉ bạn có quyền tải CV"}
                     </p>
                     {preview ? (
-                      <button
-                        className="wide-button"
-                        onClick={() => edit("personal")}
-                      >
+                      <button className="wide-button" onClick={() => edit("personal")}>
                         <Upload />
                         Tải lên mẫu CV khác
                       </button>
@@ -571,10 +547,7 @@ function AuthenticatedProfilePage() {
                         <SlidersHorizontal className="orange-text" />
                         Tiêu chí tìm việc
                       </h2>
-                      <button
-                        className="orange-text"
-                        onClick={() => edit("preferences")}
-                      >
+                      <button className="orange-text" onClick={() => edit("preferences")}>
                         Chỉnh sửa
                       </button>
                     </div>
@@ -596,10 +569,7 @@ function AuthenticatedProfilePage() {
                         </div>
                       ))}
                     </dl>
-                    <button
-                      className="wide-button"
-                      onClick={() => edit("preferences")}
-                    >
+                    <button className="wide-button" onClick={() => edit("preferences")}>
                       Cập nhật tiêu chí
                     </button>
                   </section>
@@ -614,18 +584,22 @@ function AuthenticatedProfilePage() {
                     <div className="profile-stats">
                       <div>
                         <span>Lượt xem hồ sơ</span>
-                        <strong>{preview ? demo?.views ?? "—" : data?.activity?.views ?? 0}</strong>
+                        <strong>
+                          {preview ? (demo?.views ?? "—") : (data?.activity?.views ?? 0)}
+                        </strong>
                       </div>
                       <div>
                         <span>Mời phỏng vấn</span>
-                        <strong>{preview ? demo?.invitations ?? "—" : data?.activity?.invitations ?? 0}</strong>
+                        <strong>
+                          {preview
+                            ? (demo?.invitations ?? "—")
+                            : (data?.activity?.invitations ?? 0)}
+                        </strong>
                       </div>
                     </div>
-                    <p className="visitors-heading">
-                      DOANH NGHIỆP ĐÃ XEM GẦN ĐÂY
-                    </p>
+                    <p className="visitors-heading">DOANH NGHIỆP ĐÃ XEM GẦN ĐÂY</p>
                     {preview ? (
-                      (demo?.visitors || []).map(({name,initials}) => (
+                      (demo?.visitors || []).map(({ name, initials }) => (
                         <div className="profile-visitor" key={name}>
                           <span>{initials}</span>
                           <strong>
@@ -636,9 +610,22 @@ function AuthenticatedProfilePage() {
                       ))
                     ) : data?.activity?.visitors?.length ? (
                       data.activity.visitors.map((visitor) => (
-                        <Link className="profile-visitor" key={visitor.companyId} to={`/companies/${visitor.companyId}`}>
-                          <span>{visitor.name.split(/\s+/).slice(0, 2).map((word) => word[0]).join("")}</span>
-                          <strong>{visitor.name}<small>Đã xem ngày {formatDate(visitor.viewedAt)}</small></strong>
+                        <Link
+                          className="profile-visitor"
+                          key={visitor.companyId}
+                          to={`/companies/${visitor.companyId}`}
+                        >
+                          <span>
+                            {visitor.name
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((word) => word[0])
+                              .join("")}
+                          </span>
+                          <strong>
+                            {visitor.name}
+                            <small>Đã xem ngày {formatDate(visitor.viewedAt)}</small>
+                          </strong>
                         </Link>
                       ))
                     ) : (
@@ -669,9 +656,7 @@ function AuthenticatedProfilePage() {
           {editor && (
             <form onSubmit={submit}>
               {fields
-                .filter(
-                  ([key]) => editor.section !== "skills" || key === "title",
-                )
+                .filter(([key]) => editor.section !== "skills" || key === "title")
                 .map(([key, label, type]) => (
                   <label key={key}>
                     {label}
@@ -680,9 +665,7 @@ function AuthenticatedProfilePage() {
                         required
                         disabled={busy}
                         value={
-                          workTypes.includes(editor.values.workType)
-                            ? editor.values.workType
-                            : ""
+                          workTypes.includes(editor.values.workType) ? editor.values.workType : ""
                         }
                         onChange={(e) =>
                           setEditor({
@@ -703,8 +686,7 @@ function AuthenticatedProfilePage() {
                           </option>
                         ))}
                       </Select>
-                    ) : (editor.section === "preferences" &&
-                        key === "desiredLocation") ||
+                    ) : (editor.section === "preferences" && key === "desiredLocation") ||
                       (editor.section === "personal" && key === "location") ? (
                       <>
                         <Select
@@ -715,14 +697,10 @@ function AuthenticatedProfilePage() {
                               (province) =>
                                 province.id ===
                                   editor.values[
-                                    key === "location"
-                                      ? "provinceId"
-                                      : "desiredProvinceId"
+                                    key === "location" ? "provinceId" : "desiredProvinceId"
                                   ] ||
                                 (!editor.values[
-                                  key === "location"
-                                    ? "provinceId"
-                                    : "desiredProvinceId"
+                                  key === "location" ? "provinceId" : "desiredProvinceId"
                                 ] &&
                                   normalizeProvince(province.name) ===
                                     normalizeProvince(editor.values[key])),
@@ -733,22 +711,17 @@ function AuthenticatedProfilePage() {
                               ...editor,
                               values: {
                                 ...editor.values,
-                                [key === "location"
-                                  ? "provinceId"
-                                  : "desiredProvinceId"]: e.target.value,
+                                [key === "location" ? "provinceId" : "desiredProvinceId"]:
+                                  e.target.value,
                                 [key]:
-                                  provinces.find(
-                                    (province) =>
-                                      province.id === e.target.value,
-                                  )?.name || "",
+                                  provinces.find((province) => province.id === e.target.value)
+                                    ?.name || "",
                               },
                             })
                           }
                         >
                           <option value="" disabled>
-                            {provinces
-                              ? "Chọn tỉnh/thành phố"
-                              : "Đang tải tỉnh/thành phố…"}
+                            {provinces ? "Chọn tỉnh/thành phố" : "Đang tải tỉnh/thành phố…"}
                           </option>
                           {provinces?.map((province) => (
                             <option key={province.id} value={province.id}>
@@ -761,9 +734,7 @@ function AuthenticatedProfilePage() {
                             {provinceError}
                             <button
                               type="button"
-                              onClick={() =>
-                                setProvinceAttempt((value) => value + 1)
-                              }
+                              onClick={() => setProvinceAttempt((value) => value + 1)}
                             >
                               Tải lại địa điểm
                             </button>
@@ -849,9 +820,7 @@ function AuthenticatedProfilePage() {
               )}
               <div className="editor-actions">
                 {editor.index !== null &&
-                  !["personal", "preferences", "summary"].includes(
-                    editor.section,
-                  ) && (
+                  !["personal", "preferences", "summary"].includes(editor.section) && (
                     <button
                       className="delete-button"
                       type="button"
@@ -872,18 +841,12 @@ function AuthenticatedProfilePage() {
                       Xóa mục
                     </button>
                   )}
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => setEditor(null)}
-                >
+                <button type="button" disabled={busy} onClick={() => setEditor(null)}>
                   Hủy
                 </button>
                 <button
                   className="primary"
-                  disabled={
-                    busy || (editingCatalog && (!provinces || !!provinceError))
-                  }
+                  disabled={busy || (editingCatalog && (!provinces || !!provinceError))}
                 >
                   {busy ? "Đang lưu…" : "Lưu thay đổi"}
                 </button>

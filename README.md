@@ -2,6 +2,15 @@
 
 React **JavaScript/JSX**, Vite, React Router, Tailwind CSS v4 và shadcn/ui. Dự án tổ chức theo Feature-Sliced Design (FSD).
 
+## Format code
+
+FE dùng Prettier với cấu hình trong `.prettierrc.json`:
+
+```bash
+npm run format
+npm run format:check
+```
+
 ## Chạy dự án
 
 Yêu cầu Node.js 22.13+ (hoặc bản LTS mới hơn tương thích), npm.

@@ -6,5 +6,11 @@ import { router } from "./router";
 
 export function CandidateApp() {
   const { account, loading } = useCandidateSession();
-  return <SavedJobsProvider account={account} sessionLoading={loading}><ToastProvider><RouterProvider router={router} /></ToastProvider></SavedJobsProvider>;
+  return (
+    <SavedJobsProvider account={account} sessionLoading={loading}>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </SavedJobsProvider>
+  );
 }

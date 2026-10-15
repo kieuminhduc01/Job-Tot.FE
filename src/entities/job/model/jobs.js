@@ -35,8 +35,7 @@ export const jobs = [
     type: "Toàn thời gian",
     salary: "30 – 50 triệu",
     tags: ["Node.js", "PostgreSQL", "Docker"],
-    description:
-      "Phát triển API và hệ thống dữ liệu phục vụ nền tảng thương mại điện tử.",
+    description: "Phát triển API và hệ thống dữ liệu phục vụ nền tảng thương mại điện tử.",
     featured: false,
   },
   {
@@ -65,9 +64,7 @@ export function filterJobs(items, { query = "", location = "", type = "" }) {
   const keyword = normalize(query.trim());
   return items.filter(
     (job) =>
-      normalize([job.title, job.company, ...job.tags].join(" ")).includes(
-        keyword,
-      ) &&
+      normalize([job.title, job.company, ...job.tags].join(" ")).includes(keyword) &&
       (!location || job.location === location) &&
       (!type || job.type === type),
   );

@@ -36,12 +36,7 @@ function DialogOverlay({ className, ...props }) {
   );
 }
 
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}) {
+function DialogContent({ className, children, showCloseButton = true, ...props }) {
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -78,19 +73,11 @@ function DialogHeader({ className, ...props }) {
   );
 }
 
-function DialogFooter({
-  className,
-  showCloseButton = false,
-  children,
-  ...props
-}) {
+function DialogFooter({ className, showCloseButton = false, children, ...props }) {
   return (
     <div
       data-slot="dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className,
-      )}
+      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
       {...props}
     >
       {children}

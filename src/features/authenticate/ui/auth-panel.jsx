@@ -18,7 +18,8 @@ export function AuthPanel({ mode }) {
         value={role}
         onValueChange={(value) => {
           const next = new URLSearchParams(params);
-          if (value === "employer") next.set("role", value); else next.delete("role");
+          if (value === "employer") next.set("role", value);
+          else next.delete("role");
           setParams(next, { replace: true });
         }}
       >
@@ -42,10 +43,7 @@ export function AuthPanel({ mode }) {
           </TabsTrigger>
         </TabsList>
         <div className="mt-[22px] flex items-center justify-between gap-2.5">
-          <nav
-            className="flex gap-6 max-[950px]:gap-4"
-            aria-label="Hình thức xác thực"
-          >
+          <nav className="flex gap-6 max-[950px]:gap-4" aria-label="Hình thức xác thực">
             <Link
               className="relative pb-2.5 text-base font-bold text-auth-text-nav aria-[current=page]:text-auth-ink aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:bottom-0 aria-[current=page]:after:h-[3px] aria-[current=page]:after:rounded-lg aria-[current=page]:after:bg-auth-orange aria-[current=page]:after:content-[''] max-[950px]:text-sm max-[700px]:text-base"
               to={`/login${tabSearch}`}
@@ -67,12 +65,17 @@ export function AuthPanel({ mode }) {
         </div>
         <div className="mt-3.5 flex items-center gap-3 whitespace-nowrap text-base leading-[18px] text-auth-text-divider before:h-px before:flex-1 before:bg-auth-border before:content-[''] after:h-px after:flex-1 after:bg-auth-border after:content-[''] max-[700px]:gap-2 max-[700px]:text-xs">
           <span>
-            {mode === "register" ? "đăng ký" : "đăng nhập"} bằng {role === "employer" ? "Email công việc" : "Email / Số điện thoại"}
+            {mode === "register" ? "đăng ký" : "đăng nhập"} bằng{" "}
+            {role === "employer" ? "Email công việc" : "Email / Số điện thoại"}
           </span>
         </div>
         {["candidate", "employer"].map((value) => (
           <TabsContent key={value} value={value}>
-            {value === "employer" ? <EmployerCredentialsForm key={mode} mode={mode} /> : <CredentialsForm key={mode} mode={mode} role={value} />}
+            {value === "employer" ? (
+              <EmployerCredentialsForm key={mode} mode={mode} />
+            ) : (
+              <CredentialsForm key={mode} mode={mode} role={value} />
+            )}
           </TabsContent>
         ))}
       </Tabs>

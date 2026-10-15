@@ -20,11 +20,7 @@ const fsdRule = {
   create(context) {
     function check(node) {
       const value = node.source?.value;
-      if (
-        typeof value !== "string" ||
-        (!value.startsWith("@/") && !value.startsWith("."))
-      )
-        return;
+      if (typeof value !== "string" || (!value.startsWith("@/") && !value.startsWith("."))) return;
       const from = path.relative(sourceRoot, context.filename).split(path.sep);
       const target = value.startsWith("@/")
         ? path.join(sourceRoot, value.slice(2))
@@ -33,8 +29,7 @@ const fsdRule = {
       const fromLayer = layers.indexOf(from[0]);
       const toLayer = layers.indexOf(to[0]);
       if (fromLayer < 0 || toLayer < 0) return;
-      const sameSlice =
-        from[0] === to[0] && (!sliced.includes(from[0]) || from[1] === to[1]);
+      const sameSlice = from[0] === to[0] && (!sliced.includes(from[0]) || from[1] === to[1]);
       if (toLayer < fromLayer || (toLayer === fromLayer && !sameSlice)) {
         context.report({ node, messageId: "boundary" });
       } else if (
@@ -55,16 +50,39 @@ const fsdRule = {
 };
 
 const requestEffectRule = {
-  meta: { type: "problem", schema: [], messages: { cleanup: "API effects must defer startup with setTimeout, use AbortController, and clear the timer before aborting in cleanup (StrictMode)." } },
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      cleanup:
+        "API effects must defer startup with setTimeout, use AbortController, and clear the timer before aborting in cleanup (StrictMode).",
+    },
+  },
   create(context) {
     return {
       CallExpression(node) {
-        const effect = node.callee.type === "Identifier" ? node.callee.name : node.callee.type === "MemberExpression" ? node.callee.property.name : null;
+        const effect =
+          node.callee.type === "Identifier"
+            ? node.callee.name
+            : node.callee.type === "MemberExpression"
+              ? node.callee.property.name
+              : null;
         const callback = node.arguments[0];
-        if (effect !== "useEffect" || !callback || !["ArrowFunctionExpression", "FunctionExpression"].includes(callback.type)) return;
+        if (
+          effect !== "useEffect" ||
+          !callback ||
+          !["ArrowFunctionExpression", "FunctionExpression"].includes(callback.type)
+        )
+          return;
         const code = context.sourceCode.getText(callback);
         if (!/\b(?:fetch|messagesApi)\s*\(|\b\w*(?:Api|Auth)\.\w+\s*\(/.test(code)) return;
-        if (!/\bsetTimeout\s*\(/.test(code) || !/\bAbortController\s*\(/.test(code) || !/\bclearTimeout\s*\(/.test(code) || !/\.abort\s*\(/.test(code) || code.indexOf("clearTimeout(") > code.lastIndexOf(".abort("))
+        if (
+          !/\bsetTimeout\s*\(/.test(code) ||
+          !/\bAbortController\s*\(/.test(code) ||
+          !/\bclearTimeout\s*\(/.test(code) ||
+          !/\.abort\s*\(/.test(code) ||
+          code.indexOf("clearTimeout(") > code.lastIndexOf(".abort(")
+        )
           context.report({ node: callback, messageId: "cleanup" });
       },
     };
@@ -73,8 +91,12 @@ const requestEffectRule = {
 
 const sharedUiRule = {
   meta: {
-    type: "problem", schema: [],
-    messages: { primitive: "Use the shared {{component}} component so selection controls and tables stay consistent." },
+    type: "problem",
+    schema: [],
+    messages: {
+      primitive:
+        "Use the shared {{component}} component so selection controls and tables stay consistent.",
+    },
   },
   create(context) {
     const filename = context.filename.replaceAll("\\", "/");
@@ -108,14 +130,8 @@ export default [
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "no-unused-vars": [
-        "error",
-        { varsIgnorePattern: "^[A-Z_]", argsIgnorePattern: "^_" },
-      ],
-      "react-refresh/only-export-components": [
-        "error",
-        { allowConstantExport: true },
-      ],
+      "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]", argsIgnorePattern: "^_" }],
+      "react-refresh/only-export-components": ["error", { allowConstantExport: true }],
       "fsd/boundaries": "error",
       "request-lifecycle/safe-fetch-effect": "error",
       "shared-ui/primitives": "error",

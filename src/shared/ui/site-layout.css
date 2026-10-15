@@ -22,6 +22,14 @@ div:has(> .site-footer) > header {
 }
 
 @media (max-width: 600px) {
-  .site-footer address > * { min-width:0; flex-wrap:wrap; overflow-wrap:anywhere; }
-  .site-footer address strong { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+  .site-footer address > * {
+    min-width: 0;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+  .site-footer address strong {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
 }

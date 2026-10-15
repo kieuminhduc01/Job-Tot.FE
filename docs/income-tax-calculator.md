@@ -9,6 +9,7 @@ Phạm vi: người lao động Việt Nam cư trú, hợp đồng từ 3 tháng
 So sánh minh họa 2025: 7 bậc 5/10/15/20/25/30/35% với khoảng 5/10/18/32/52/80 triệu, giảm trừ 11 triệu và 4,4 triệu/người, hưu trí tự nguyện giới hạn 1 triệu. Giữ cùng Gross, khoản miễn thuế và bảo hiểm hiện tại để cô lập chênh lệch chính sách; không dùng tính lại bảo hiểm/quyết toán năm 2025. Không cố định tỷ lệ tiết kiệm như ảnh; chênh lệch được tính thực tế.
 
 Nguồn chính thức:
+
 - https://xaydungchinhsach.chinhphu.vn/quy-dinh-moi-ve-khau-tru-thue-thu-nhap-ca-nhan-119260703150410707.htm
 - https://xaydungchinhsach.chinhphu.vn/quy-dinh-giam-tru-gia-canh-119260703144038062.htm
 - https://xaydungchinhsach.chinhphu.vn/huong-dan-quyet-toan-thue-thu-nhap-ca-nhan-doi-voi-thu-nhap-tu-tien-luong-tien-cong-119260306092819051.htm

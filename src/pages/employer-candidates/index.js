@@ -1,1 +1,1 @@
-export { EmployerCandidatesPage } from './ui/employer-candidates-page';
+export { EmployerCandidatesPage } from "./ui/employer-candidates-page";

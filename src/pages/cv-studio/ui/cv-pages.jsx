@@ -27,12 +27,7 @@ import { CareerResources } from "@/widgets/career-resources";
 import { CvEditor } from "@/widgets/cv-editor";
 import { PageBreadcrumb } from "@/shared/ui/page-breadcrumb";
 import { useCandidateSession } from "@/features/authenticate";
-import {
-  cvApi,
-  adminCvApi,
-  blankCv,
-  CvSheet,
-} from "@/entities/cv";
+import { cvApi, adminCvApi, blankCv, CvSheet } from "@/entities/cv";
 import { AdminLayout } from "@/widgets/admin-layout";
 import { Pagination } from "@/shared/ui/pagination";
 import "./cv-pages.css";
@@ -162,9 +157,8 @@ export function CvTemplatesPage() {
     )
     .sort(
       (a, b) =>
-        (sort === "layout"
-          ? a.document.layout.localeCompare(b.document.layout)
-          : 0) || a.name.localeCompare(b.name, "vi"),
+        (sort === "layout" ? a.document.layout.localeCompare(b.document.layout) : 0) ||
+        a.name.localeCompare(b.name, "vi"),
     );
   const totalPages = Math.max(1, Math.ceil(filtered.length / 9));
   const currentPage = Math.min(page, totalPages);
@@ -193,8 +187,8 @@ export function CvTemplatesPage() {
             <em>Thể Hiện Chất Riêng Của Bạn</em>
           </h1>
           <p>
-            Chọn mẫu phù hợp, chỉnh sửa nội dung và bố cục ngay trên trình
-            duyệt. Lưu CV riêng của bạn và xuất bản PDF khi sẵn sàng ứng tuyển.
+            Chọn mẫu phù hợp, chỉnh sửa nội dung và bố cục ngay trên trình duyệt. Lưu CV riêng của
+            bạn và xuất bản PDF khi sẵn sàng ứng tuyển.
           </p>
           <div className="cv-benefit-grid">
             <span>
@@ -251,18 +245,14 @@ export function CvTemplatesPage() {
               Xem trước trước khi xuất PDF
             </li>
           </ul>
-          <p>
-            Độ phù hợp của CV sẽ phụ thuộc vào yêu cầu riêng của từng nhà tuyển dụng.
-          </p>
+          <p>Độ phù hợp của CV sẽ phụ thuộc vào yêu cầu riêng của từng nhà tuyển dụng.</p>
         </aside>
       </section>
       <form
         className="cv-catalog-search"
         onSubmit={(event) => {
           event.preventDefault();
-          document
-            .getElementById("cv-template-list")
-            ?.scrollIntoView({ behavior: "smooth" });
+          document.getElementById("cv-template-list")?.scrollIntoView({ behavior: "smooth" });
         }}
       >
         <label>
@@ -311,11 +301,9 @@ export function CvTemplatesPage() {
         ) : (
           <>
             <div className="cv-gallery-grid">
-              {filtered
-                .slice((currentPage - 1) * 9, currentPage * 9)
-                .map((template) => (
-                  <TemplateCard key={template.id} template={template} />
-                ))}
+              {filtered.slice((currentPage - 1) * 9, currentPage * 9).map((template) => (
+                <TemplateCard key={template.id} template={template} />
+              ))}
             </div>
             {!filtered.length && (
               <div className="cv-load-state">
@@ -402,8 +390,7 @@ export function MyCvsPage() {
         <LoadState />
       ) : !account ? (
         <div className="cv-load-state">
-          Đăng nhập để quản lý CV của bạn.{" "}
-          <Link to="/login?returnTo=%2Fmy-cvs">Đăng nhập</Link>
+          Đăng nhập để quản lý CV của bạn. <Link to="/login?returnTo=%2Fmy-cvs">Đăng nhập</Link>
         </div>
       ) : (
         <MyCvsList />
@@ -419,10 +406,16 @@ function MyCvsList() {
   const [changingDefault, setChangingDefault] = useState(false);
   async function changeDefault(cv) {
     if (changingDefault) return;
-    setChangingDefault(true); setFailure("");
-    try { await cvApi.setDefault(cv.id, !cv.isDefault); retry(); }
-    catch (reason) { setFailure(reason.message); }
-    finally { setChangingDefault(false); }
+    setChangingDefault(true);
+    setFailure("");
+    try {
+      await cvApi.setDefault(cv.id, !cv.isDefault);
+      retry();
+    } catch (reason) {
+      setFailure(reason.message);
+    } finally {
+      setChangingDefault(false);
+    }
   }
   async function remove() {
     setPending(true);
@@ -470,7 +463,14 @@ function MyCvsList() {
               <Link to={`/my-cvs/${cv.id}/edit`} className="cv-secondary">
                 Chỉnh sửa
               </Link>
-              <button type="button" className="cv-secondary" disabled={changingDefault || pending} onClick={() => changeDefault(cv)}>{cv.isDefault ? "Đặt làm CV bổ sung" : "Đặt làm CV chính"}</button>
+              <button
+                type="button"
+                className="cv-secondary"
+                disabled={changingDefault || pending}
+                onClick={() => changeDefault(cv)}
+              >
+                {cv.isDefault ? "Đặt làm CV bổ sung" : "Đặt làm CV chính"}
+              </button>
               <button
                 aria-label={`Xóa CV ${cv.title}`}
                 onClick={() => {
@@ -483,9 +483,7 @@ function MyCvsList() {
             </article>
           ))}
           {!data.length && (
-            <p className="cv-load-state">
-              Bạn chưa có CV online. Chọn một mẫu để bắt đầu.
-            </p>
+            <p className="cv-load-state">Bạn chưa có CV online. Chọn một mẫu để bắt đầu.</p>
           )}
         </div>
       )}
@@ -498,23 +496,12 @@ function MyCvsList() {
             className="cv-confirm-dialog"
           >
             <h2 id="cv-delete-title">Xóa CV “{removing.title}”?</h2>
-            <p>
-              CV sẽ bị gỡ khỏi danh sách của bạn. Các hồ sơ ứng tuyển đã gửi
-              được giữ lại.
-            </p>
+            <p>CV sẽ bị gỡ khỏi danh sách của bạn. Các hồ sơ ứng tuyển đã gửi được giữ lại.</p>
             <div>
-              <button
-                className="cv-secondary"
-                disabled={pending}
-                onClick={() => setRemoving(null)}
-              >
+              <button className="cv-secondary" disabled={pending} onClick={() => setRemoving(null)}>
                 Hủy
               </button>
-              <button
-                className="cv-primary"
-                disabled={pending}
-                onClick={remove}
-              >
+              <button className="cv-primary" disabled={pending} onClick={remove}>
                 {pending ? "Đang xóa…" : "Xóa CV"}
               </button>
             </div>
@@ -532,10 +519,7 @@ export function CvEditPage() {
       {loading ? (
         <LoadState />
       ) : !account ? (
-        <Navigate
-          to={`/login?returnTo=${encodeURIComponent(`/my-cvs/${id}/edit`)}`}
-          replace
-        />
+        <Navigate to={`/login?returnTo=${encodeURIComponent(`/my-cvs/${id}/edit`)}`} replace />
       ) : (
         <LoadedCvEdit key={id} id={id} />
       )}
@@ -589,8 +573,7 @@ function CandidateEditor({ initial, reload }) {
       setError(null);
       return true;
     } catch (failure) {
-      if (alive.current && !controller.current.signal.aborted)
-        setError(failure);
+      if (alive.current && !controller.current.signal.aborted) setError(failure);
       return false;
     } finally {
       saving.current = false;
@@ -615,7 +598,10 @@ function CandidateEditor({ initial, reload }) {
   }, [dirty]);
   return (
     <>
-      <PageBreadcrumb current={draft.title || "Chưa đặt tên CV"} parents={[{ to: "/my-cvs", label: "CV của tôi" }]} />
+      <PageBreadcrumb
+        current={draft.title || "Chưa đặt tên CV"}
+        parents={[{ to: "/my-cvs", label: "CV của tôi" }]}
+      />
       <style>{`@page { size: A4; margin: ${draft.document.margin}mm; }`}</style>
       <div className="cv-page-heading cv-edit-heading">
         <div>
@@ -623,18 +609,10 @@ function CandidateEditor({ initial, reload }) {
             aria-label="Tên CV"
             value={draft.title}
             maxLength={200}
-            onChange={(event) =>
-              setDraft({ ...draft, title: event.target.value })
-            }
+            onChange={(event) => setDraft({ ...draft, title: event.target.value })}
           />
           <span role="status" className={error ? "cv-error" : "cv-save-status"}>
-            {error
-              ? error.message
-              : busy
-                ? "Đang lưu…"
-                : dirty
-                  ? "Có thay đổi chưa lưu"
-                  : "Đã lưu"}
+            {error ? error.message : busy ? "Đang lưu…" : dirty ? "Có thay đổi chưa lưu" : "Đã lưu"}
           </span>
         </div>
         <div className="cv-edit-actions">
@@ -648,11 +626,7 @@ function CandidateEditor({ initial, reload }) {
             <Save />
             Lưu CV
           </button>
-          <button
-            className="cv-primary"
-            disabled={dirty || busy}
-            onClick={() => window.print()}
-          >
+          <button className="cv-primary" disabled={dirty || busy} onClick={() => window.print()}>
             <Printer />
             In / Lưu PDF
           </button>
@@ -661,9 +635,7 @@ function CandidateEditor({ initial, reload }) {
       {error && (
         <div className="cv-error-actions">
           {error.status === 409 ? (
-            <button onClick={reload}>
-              Tải bản mới nhất (bỏ thay đổi chưa lưu)
-            </button>
+            <button onClick={reload}>Tải bản mới nhất (bỏ thay đổi chưa lưu)</button>
           ) : (
             <button
               disabled={busy}
@@ -692,9 +664,7 @@ function CandidateEditor({ initial, reload }) {
             className="cv-confirm-dialog"
           >
             <h2 id="cv-leave-title">CV có thay đổi chưa lưu</h2>
-            <p>
-              Bạn muốn tiếp tục chỉnh sửa hay rời trang và bỏ các thay đổi này?
-            </p>
+            <p>Bạn muốn tiếp tục chỉnh sửa hay rời trang và bỏ các thay đổi này?</p>
             <div>
               <button className="cv-secondary" onClick={() => blocker.reset()}>
                 Tiếp tục chỉnh sửa
@@ -710,7 +680,16 @@ function CandidateEditor({ initial, reload }) {
   );
 }
 export function AdminCvTemplatesPage() {
-  return <AdminLayout>{({ onExpired }) => <div className="cv-studio-page"><title>Quản lý mẫu CV | Job Tốt Admin</title><AdminTemplates onExpired={onExpired} /></div>}</AdminLayout>;
+  return (
+    <AdminLayout>
+      {({ onExpired }) => (
+        <div className="cv-studio-page">
+          <title>Quản lý mẫu CV | Job Tốt Admin</title>
+          <AdminTemplates onExpired={onExpired} />
+        </div>
+      )}
+    </AdminLayout>
+  );
 }
 function AdminTemplates({ onExpired }) {
   const { data, error, retry } = useCvLoad("admin-list");
@@ -741,9 +720,7 @@ function AdminTemplates({ onExpired }) {
                 <CvSheet document={template.document} miniature />
               </div>
               <div>
-                <span
-                  className={`cv-publication cv-state-${template.publicationState}`}
-                >
+                <span className={`cv-publication cv-state-${template.publicationState}`}>
                   {
                     {
                       draft: "Bản nháp",
@@ -757,18 +734,13 @@ function AdminTemplates({ onExpired }) {
                   {template.category} • {layoutNames[template.document.layout]}
                 </p>
               </div>
-              <Link
-                to={`/admin/cv-templates/${template.id}/edit`}
-                className="cv-secondary"
-              >
+              <Link to={`/admin/cv-templates/${template.id}/edit`} className="cv-secondary">
                 Chỉnh sửa mẫu
               </Link>
             </article>
           ))}
           {!data.length && (
-            <p className="cv-load-state">
-              Chưa có mẫu CV. Tạo mẫu đầu tiên để bắt đầu.
-            </p>
+            <p className="cv-load-state">Chưa có mẫu CV. Tạo mẫu đầu tiên để bắt đầu.</p>
           )}
         </div>
       )}
@@ -777,19 +749,40 @@ function AdminTemplates({ onExpired }) {
 }
 export function AdminCvEditPage() {
   const { id } = useParams();
-  return <AdminLayout>{({ onExpired }) => <div className="cv-studio-page">
-    <title>Thiết kế mẫu CV | Job Tốt Admin</title>
-    {id ? <LoadedAdminEdit id={id} onExpired={onExpired} /> : <AdminEditor onExpired={onExpired} initial={{
-      name: "M\u1eabu CV m\u1edbi", description: "", category: "Chuy\u00ean nghi\u1ec7p", publicationState: "draft", document: blankCv(),
-    }} />}
-  </div>}</AdminLayout>;
+  return (
+    <AdminLayout>
+      {({ onExpired }) => (
+        <div className="cv-studio-page">
+          <title>Thiết kế mẫu CV | Job Tốt Admin</title>
+          {id ? (
+            <LoadedAdminEdit id={id} onExpired={onExpired} />
+          ) : (
+            <AdminEditor
+              onExpired={onExpired}
+              initial={{
+                name: "M\u1eabu CV m\u1edbi",
+                description: "",
+                category: "Chuy\u00ean nghi\u1ec7p",
+                publicationState: "draft",
+                document: blankCv(),
+              }}
+            />
+          )}
+        </div>
+      )}
+    </AdminLayout>
+  );
 }
 function LoadedAdminEdit({ id, onExpired }) {
   const { data, error, retry } = useCvLoad("admin-template", id);
   useEffect(() => {
     if (error?.status === 401 || error?.status === 403) onExpired();
   }, [error, onExpired]);
-  return data ? <AdminEditor key={data.version} initial={data} reload={retry} onExpired={onExpired} /> : <LoadState error={error} retry={retry} />;
+  return data ? (
+    <AdminEditor key={data.version} initial={data} reload={retry} onExpired={onExpired} />
+  ) : (
+    <LoadState error={error} retry={retry} />
+  );
 }
 function AdminEditor({ initial, reload, onExpired }) {
   const notify = useToast();
@@ -841,17 +834,10 @@ function AdminEditor({ initial, reload, onExpired }) {
             </Link>
             <h1>{initial.id ? "Chỉnh sửa mẫu CV" : "Thiết kế mẫu CV mới"}</h1>
             <span role="status">
-              {busy
-                ? "Đang lưu mẫu…"
-                : dirty
-                  ? "Có thay đổi chưa lưu"
-                  : "Đã lưu bản hiện tại"}
+              {busy ? "Đang lưu mẫu…" : dirty ? "Có thay đổi chưa lưu" : "Đã lưu bản hiện tại"}
             </span>
           </div>
-          <button
-            className="cv-primary"
-            disabled={busy || error?.status === 409}
-          >
+          <button className="cv-primary" disabled={busy || error?.status === 409}>
             <Save />
             Lưu mẫu CV
           </button>
@@ -863,9 +849,7 @@ function AdminEditor({ initial, reload, onExpired }) {
               required
               maxLength={200}
               value={draft.name}
-              onChange={(event) =>
-                setDraft({ ...draft, name: event.target.value })
-              }
+              onChange={(event) => setDraft({ ...draft, name: event.target.value })}
             />
           </label>
           <label>
@@ -874,18 +858,14 @@ function AdminEditor({ initial, reload, onExpired }) {
               required
               maxLength={100}
               value={draft.category}
-              onChange={(event) =>
-                setDraft({ ...draft, category: event.target.value })
-              }
+              onChange={(event) => setDraft({ ...draft, category: event.target.value })}
             />
           </label>
           <label>
             Trạng thái
             <Select
               value={draft.publicationState}
-              onChange={(event) =>
-                setDraft({ ...draft, publicationState: event.target.value })
-              }
+              onChange={(event) => setDraft({ ...draft, publicationState: event.target.value })}
             >
               <option value="draft">Bản nháp</option>
               <option value="published">Xuất bản</option>
@@ -897,9 +877,7 @@ function AdminEditor({ initial, reload, onExpired }) {
             <textarea
               maxLength={1000}
               value={draft.description}
-              onChange={(event) =>
-                setDraft({ ...draft, description: event.target.value })
-              }
+              onChange={(event) => setDraft({ ...draft, description: event.target.value })}
             />
           </label>
         </fieldset>
@@ -908,9 +886,7 @@ function AdminEditor({ initial, reload, onExpired }) {
         <div className="cv-error" role="alert">
           {error.message}
           {error.status === 409 && (
-            <button onClick={reload}>
-              Tải bản mới nhất (bỏ thay đổi chưa lưu)
-            </button>
+            <button onClick={reload}>Tải bản mới nhất (bỏ thay đổi chưa lưu)</button>
           )}
         </div>
       )}

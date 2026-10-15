@@ -13,6 +13,7 @@ Các điều kiện được tự xác nhận trong giao diện và đối chi�
 Ví dụ mặc định: 01/2019–12/2021 lương 5,5 triệu; 01–04/2022 lương 6 triệu. 40 tháng, tổng điều chỉnh 257,64 triệu, bình quân 6,441 triệu. Quy đổi 3,5 năm từ 2014, số nhận 45,087 triệu. Không sao chép 42 triệu trong ảnh vì hệ số và bình quân của ảnh không khớp bảng năm 2026.
 
 Nguồn:
+
 - [Hệ số năm 2026](https://xaydungchinhsach.chinhphu.vn/he-so-dieu-chinh-tien-luong-thu-nhap-thang-da-dong-bao-hiem-xa-hoi-119260206103115775.htm)
 - [Điều kiện và mức hưởng, Điều 70 Luật BHXH](https://xaydungchinhsach.chinhphu.vn/chinh-phu-quy-dinh-chi-tiet-huong-bao-hiem-xa-hoi-mot-lan-119250628072850982.htm)
 - [Nghị định 158/2025/NĐ-CP](https://vanban.chinhphu.vn/?classid=1&docid=214189&orggroupid=2&pageid=27160)

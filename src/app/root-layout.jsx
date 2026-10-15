@@ -11,8 +11,7 @@ export function RootLayout() {
         <CareerResources />
       </div>
       <footer className="site-footer mx-auto max-w-6xl border-t px-6 py-8 text-sm text-muted-foreground">
-        © {new Date().getFullYear()} TalentHub · Khởi đầu cho hành trình nghề
-        nghiệp của bạn.
+        © {new Date().getFullYear()} TalentHub · Khởi đầu cho hành trình nghề nghiệp của bạn.
       </footer>
     </div>
   );

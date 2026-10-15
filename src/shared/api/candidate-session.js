@@ -8,19 +8,27 @@ export function readTokens() {
     try {
       const value = JSON.parse(storage.getItem(storageKey));
       if (value?.accessToken && value?.refreshToken) return value;
-    } catch { storage.removeItem(storageKey); }
+    } catch {
+      storage.removeItem(storageKey);
+    }
   }
   return null;
 }
 
 export function saveTokens(session, rememberMe = localStorage.getItem(storageKey) !== null) {
-  if (!session?.accessToken || !session?.refreshToken) throw new Error("Máy chủ không trả về token đăng nhập hợp lệ.");
+  if (!session?.accessToken || !session?.refreshToken)
+    throw new Error("Máy chủ không trả về token đăng nhập hợp lệ.");
   const storage = rememberMe ? localStorage : sessionStorage;
   (rememberMe ? sessionStorage : localStorage).removeItem(storageKey);
-  storage.setItem(storageKey, JSON.stringify({
-    accessToken: session.accessToken, refreshToken: session.refreshToken,
-    expiresAt: session.expiresAt, refreshExpiresAt: session.refreshExpiresAt,
-  }));
+  storage.setItem(
+    storageKey,
+    JSON.stringify({
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      expiresAt: session.expiresAt,
+      refreshExpiresAt: session.refreshExpiresAt,
+    }),
+  );
   generation += 1;
 }
 
@@ -39,7 +47,8 @@ async function refreshTokens(failedAccessToken) {
     if (tokens.accessToken !== failedAccessToken) return tokens;
     const currentGeneration = generation;
     const response = await fetch(`${base}/api/candidate/auth/refresh`, {
-      method: "POST", credentials: "omit",
+      method: "POST",
+      credentials: "omit",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: tokens.refreshToken }),
     });
@@ -47,9 +56,11 @@ async function refreshTokens(failedAccessToken) {
       return readTokens();
     if (!response.ok) {
       if (response.status === 401 || response.status === 400) clearTokens();
-      const error = new Error(response.status === 401 || response.status === 400
-        ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-        : "Không thể làm mới phiên đăng nhập. Vui lòng thử lại.");
+      const error = new Error(
+        response.status === 401 || response.status === 400
+          ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+          : "Không thể làm mới phiên đăng nhập. Vui lòng thử lại.",
+      );
       error.status = response.status;
       throw error;
     }
@@ -60,17 +71,27 @@ async function refreshTokens(failedAccessToken) {
     return readTokens();
   };
   // The lock also prevents persistent sessions in different tabs from reusing a refresh token.
-  refreshPending ??= (navigator.locks
-    ? navigator.locks.request("jobtot.candidate.refresh", rotate)
-    : rotate()).finally(() => { refreshPending = null; });
+  refreshPending ??= (
+    navigator.locks ? navigator.locks.request("jobtot.candidate.refresh", rotate) : rotate()
+  ).finally(() => {
+    refreshPending = null;
+  });
   return refreshPending;
 }
 
-export async function candidateFetch(path, options = {}, { authenticated = true, retry = true } = {}) {
+export async function candidateFetch(
+  path,
+  options = {},
+  { authenticated = true, retry = true } = {},
+) {
   const tokens = authenticated ? readTokens() : null;
   const headers = new Headers(options.headers);
   if (tokens) headers.set("Authorization", `Bearer ${tokens.accessToken}`);
-  const response = await fetch(`${base}/api/candidate/${path}`, { ...options, credentials: "omit", headers });
+  const response = await fetch(`${base}/api/candidate/${path}`, {
+    ...options,
+    credentials: "omit",
+    headers,
+  });
   if (authenticated && retry && response.status === 401 && tokens) {
     if (await refreshTokens(tokens.accessToken)) {
       const result = await candidateFetch(path, options, { authenticated, retry: false });

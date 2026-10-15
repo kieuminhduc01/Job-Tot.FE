@@ -16,12 +16,16 @@ export function EmployerSessionProvider({ children }) {
         const value = readTokens() ? await employerAuth.me(controller.signal) : null;
         if (!controller.signal.aborted && current === version.current) setAccount(value);
       } catch (failure) {
-        if (!controller.signal.aborted && current === version.current && failure.status !== 401) setError(failure.message);
+        if (!controller.signal.aborted && current === version.current && failure.status !== 401)
+          setError(failure.message);
       } finally {
         if (!controller.signal.aborted && current === version.current) setLoading(false);
       }
     }, 0);
-    return () => { clearTimeout(timer); controller.abort(); };
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, []);
   function signIn(value) {
     if (!value) clearTokens();
@@ -37,7 +41,7 @@ export function EmployerSessionProvider({ children }) {
       setError("");
       setLoading(false);
     };
-    const changed = event => {
+    const changed = (event) => {
       if (event.key === "jobtot.employer.tokens" && !event.newValue) ended();
     };
     window.addEventListener("employer-session-ended", ended);
@@ -48,13 +52,14 @@ export function EmployerSessionProvider({ children }) {
     };
   }, []);
   async function signOut() {
-    try { await employerAuth.logout(); }
-    finally { signIn(null); }
+    try {
+      await employerAuth.logout();
+    } finally {
+      signIn(null);
+    }
   }
   return (
-    <EmployerSessionContext.Provider
-      value={{ account, loading, error, signIn, signOut }}
-    >
+    <EmployerSessionContext.Provider value={{ account, loading, error, signIn, signOut }}>
       {children}
     </EmployerSessionContext.Provider>
   );

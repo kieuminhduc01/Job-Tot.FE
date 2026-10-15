@@ -3,5 +3,11 @@ import { CareerKnowledge } from "@/shared/ui/career-resources/career-knowledge";
 import { CareerTools } from "@/shared/ui/career-resources/career-tools";
 
 export function CareerResources({ showCvTemplates = true }) {
-  return <>{showCvTemplates && <CvTemplates />}<CareerKnowledge /><CareerTools /></>;
+  return (
+    <>
+      {showCvTemplates && <CvTemplates />}
+      <CareerKnowledge />
+      <CareerTools />
+    </>
+  );
 }

@@ -116,8 +116,7 @@ function CompanyDetail({ id }) {
           if (!controller.signal.aborted) setFollowed(ids.includes(id));
         })
         .catch((failure) => {
-          if (!controller.signal.aborted)
-            notify(failure.message, { type: "error" });
+          if (!controller.signal.aborted) notify(failure.message, { type: "error" });
         });
     }, 0);
     return () => {
@@ -138,11 +137,7 @@ function CompanyDetail({ id }) {
     try {
       await companiesApi.follow(id, !followed);
       setFollowed(!followed);
-      notify(
-        followed
-          ? `Đã bỏ theo dõi ${company.name}.`
-          : `Đã theo dõi ${company.name}.`,
-      );
+      notify(followed ? `Đã bỏ theo dõi ${company.name}.` : `Đã theo dõi ${company.name}.`);
     } catch (failure) {
       notify(failure.message, { type: "error" });
     } finally {
@@ -150,19 +145,14 @@ function CompanyDetail({ id }) {
     }
   }
 
-  const location =
-    company && [company.address, company.province].filter(Boolean).join(", ");
+  const location = company && [company.address, company.province].filter(Boolean).join(", ");
   const size =
     company?.sizeMin || company?.sizeMax
       ? `${company.sizeMin || company.sizeMax}${company.sizeMax && company.sizeMax !== company.sizeMin ? ` – ${company.sizeMax}` : company.sizeMax ? "" : "+"} nhân viên`
       : "Chưa cập nhật";
   return (
     <div className="companies-page company-detail-page font-roboto">
-      <title>
-        {company
-          ? `${company.name} | Job Tốt`
-          : "Chi tiết doanh nghiệp | Job Tốt"}
-      </title>
+      <title>{company ? `${company.name} | Job Tốt` : "Chi tiết doanh nghiệp | Job Tốt"}</title>
       <AuthHeader userName={account?.fullName} loading={loading} />
       <main className="page-container company-container">
         <PageBreadcrumb
@@ -221,8 +211,12 @@ function CompanyDetail({ id }) {
                   </p>
                 </div>
                 <div className="detail-identity-actions">
-                  <Link className="detail-follow" to={`/messages?company=${encodeURIComponent(id)}`}>
-                    <MessageCircle />Liên hệ với HR
+                  <Link
+                    className="detail-follow"
+                    to={`/messages?company=${encodeURIComponent(id)}`}
+                  >
+                    <MessageCircle />
+                    Liên hệ với HR
                   </Link>
                   <a className="company-primary" href="#company-open-jobs">
                     <BriefcaseBusiness />
@@ -234,9 +228,7 @@ function CompanyDetail({ id }) {
                     disabled={pending}
                     onClick={toggleFollow}
                   >
-                    <Heart
-                      fill={account && followed ? "currentColor" : "none"}
-                    />
+                    <Heart fill={account && followed ? "currentColor" : "none"} />
                     {account && followed ? "Đang theo dõi" : "Theo dõi công ty"}
                   </button>
                 </div>
@@ -247,8 +239,7 @@ function CompanyDetail({ id }) {
                 <section className="detail-panel">
                   <h2>Về {company.name}</h2>
                   <p className="detail-description">
-                    {company.description ||
-                      "Doanh nghiệp chưa cập nhật giới thiệu."}
+                    {company.description || "Doanh nghiệp chưa cập nhật giới thiệu."}
                   </p>
                   <div className="detail-stats">
                     <div>
@@ -260,9 +251,7 @@ function CompanyDetail({ id }) {
                       <span>Quy mô doanh nghiệp</span>
                     </div>
                     <div>
-                      <strong>
-                        {company.isVerified ? "Đã xác thực" : "Chưa xác thực"}
-                      </strong>
+                      <strong>{company.isVerified ? "Đã xác thực" : "Chưa xác thực"}</strong>
                       <span>Thông tin doanh nghiệp</span>
                     </div>
                   </div>
@@ -274,15 +263,9 @@ function CompanyDetail({ id }) {
                       <dl className="detail-facts">
                         {[
                           ["Tên thương mại quốc tế", company.brand.englishName],
-                          [
-                            "Người đại diện / Lãnh đạo",
-                            company.brand.representative,
-                          ],
+                          ["Người đại diện / Lãnh đạo", company.brand.representative],
                           ["Nguồn vốn / Vốn điều lệ", company.brand.capital],
-                          [
-                            "Thời gian làm việc tiêu chuẩn",
-                            company.brand.workingHours,
-                          ],
+                          ["Thời gian làm việc tiêu chuẩn", company.brand.workingHours],
                           ["Ngành nghề / Lĩnh vực", company.industry],
                         ]
                           .filter(([, value]) => value)
@@ -297,13 +280,9 @@ function CompanyDetail({ id }) {
                     {(company.brand.story || company.brand.values) && (
                       <section className="detail-panel">
                         <h2>Câu chuyện Văn hóa & Tuyên ngôn Giá trị</h2>
-                        <p className="detail-description">
-                          {company.brand.story}
-                        </p>
+                        <p className="detail-description">{company.brand.story}</p>
                         {company.brand.values && (
-                          <p className="detail-description">
-                            {company.brand.values}
-                          </p>
+                          <p className="detail-description">{company.brand.values}</p>
                         )}
                       </section>
                     )}
@@ -313,9 +292,7 @@ function CompanyDetail({ id }) {
                         {company.brand.highlights.map((item, index) => (
                           <div className="detail-brand-item" key={index}>
                             <h3>{item.title}</h3>
-                            <p className="detail-description">
-                              {item.description}
-                            </p>
+                            <p className="detail-description">{item.description}</p>
                             {item.tag && <small>{item.tag}</small>}
                           </div>
                         ))}
@@ -333,9 +310,7 @@ function CompanyDetail({ id }) {
                             {items.map((item, index) => (
                               <div className="detail-brand-item" key={index}>
                                 <h3>{item.title}</h3>
-                                <p className="detail-description">
-                                  {item.description}
-                                </p>
+                                <p className="detail-description">{item.description}</p>
                                 {item.tag && <small>{item.tag}</small>}
                               </div>
                             ))}
@@ -345,12 +320,8 @@ function CompanyDetail({ id }) {
                     {(company.brand.workplace || company.brand.workLife) && (
                       <section className="detail-panel">
                         <h2>Môi trường làm việc & Đời sống công ty</h2>
-                        <p className="detail-description">
-                          {company.brand.workplace}
-                        </p>
-                        <p className="detail-description">
-                          {company.brand.workLife}
-                        </p>
+                        <p className="detail-description">{company.brand.workplace}</p>
+                        <p className="detail-description">{company.brand.workLife}</p>
                       </section>
                     )}
                     {company.brand.gallery?.length > 0 && (
@@ -372,15 +343,11 @@ function CompanyDetail({ id }) {
                 )}
                 <section className="detail-panel" id="company-open-jobs">
                   <h2>Việc làm đang tuyển tại {company.name}</h2>
-                  <p className="detail-muted">
-                    Khám phá cơ hội nghề nghiệp phù hợp với bạn.
-                  </p>
+                  <p className="detail-muted">Khám phá cơ hội nghề nghiệp phù hợp với bạn.</p>
                   {jobsError ? (
                     <div role="alert" className="company-error">
                       {jobsError}
-                      <button onClick={() => setAttempt((x) => x + 1)}>
-                        Thử lại
-                      </button>
+                      <button onClick={() => setAttempt((x) => x + 1)}>Thử lại</button>
                     </div>
                   ) : !jobs || jobs.page !== page ? (
                     <p role="status">Đang tải việc làm…</p>
@@ -390,9 +357,7 @@ function CompanyDetail({ id }) {
                         jobs.items.map((job) => (
                           <article className="detail-job" key={job.id}>
                             <div>
-                              <span className="detail-job-company">
-                                {company.name}
-                              </span>
+                              <span className="detail-job-company">{company.name}</span>
                               <h3>
                                 <Link to={`/jobs/${job.id}`}>{job.title}</Link>
                               </h3>
@@ -407,9 +372,7 @@ function CompanyDetail({ id }) {
                               </p>
                               <details>
                                 <summary>Xem mô tả công việc</summary>
-                                <p className="detail-description">
-                                  {job.description}
-                                </p>
+                                <p className="detail-description">{job.description}</p>
                               </details>
                             </div>
                             <Link
@@ -447,10 +410,7 @@ function CompanyDetail({ id }) {
                       ["Quy mô nhân sự", size],
                       ["Địa chỉ", location],
                       ["Việc làm đang mở", String(company.openJobCount)],
-                      [
-                        "Xác thực",
-                        company.isVerified ? "Đã xác thực" : "Chưa xác thực",
-                      ],
+                      ["Xác thực", company.isVerified ? "Đã xác thực" : "Chưa xác thực"],
                     ].map(([label, value]) => (
                       <div key={label}>
                         <dt>{label}</dt>
@@ -465,24 +425,16 @@ function CompanyDetail({ id }) {
                       <MapPin />
                       Vị trí trụ sở trên bản đồ
                     </h2>
-                    <span className="detail-map-badge">
-                      Vị trí doanh nghiệp
-                    </span>
+                    <span className="detail-map-badge">Vị trí doanh nghiệp</span>
                   </div>
-                  <CompanyMap
-                    address={company.address}
-                    province={company.province}
-                  />
+                  <CompanyMap address={company.address} province={company.province} />
                 </section>
                 <section className="detail-panel detail-safety">
                   <h2>
                     <ShieldCheck />
                     Ứng tuyển an toàn
                   </h2>
-                  <p>
-                    Kiểm tra thông tin nhà tuyển dụng và không chuyển tiền để
-                    được nhận việc.
-                  </p>
+                  <p>Kiểm tra thông tin nhà tuyển dụng và không chuyển tiền để được nhận việc.</p>
                   <Link to="/profile" className="company-text-button">
                     Hoàn thiện hồ sơ của bạn →
                   </Link>

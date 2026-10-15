@@ -1,10 +1,4 @@
-import {
-  Calculator,
-  ReceiptText,
-  Shield,
-  ChartNoAxesCombined,
-  ArrowRight,
-} from "lucide-react";
+import { Calculator, ReceiptText, Shield, ChartNoAxesCombined, ArrowRight } from "lucide-react";
 import { Card } from "@/shared/ui/card";
 import { Link } from "react-router-dom";
 import { ServiceNotice } from "@/shared/ui/service-notice";
@@ -28,15 +22,13 @@ const tools = [
     icon: ReceiptText,
     title: "Tính thuế thu nhập cá nhân",
     href: "/tools/income-tax",
-    description:
-      "Tính chi tiết mức thuế TNCN phải nộp kèm các khoản giảm trừ gia cảnh.",
+    description: "Tính chi tiết mức thuế TNCN phải nộp kèm các khoản giảm trừ gia cảnh.",
   },
   {
     icon: Shield,
     title: "Tính bảo hiểm xã hội một lần",
     href: "/tools/social-insurance",
-    description:
-      "Dự tính số tiền BHXH một lần có thể nhận dựa trên thời gian và mức đóng.",
+    description: "Dự tính số tiền BHXH một lần có thể nhận dựa trên thời gian và mức đóng.",
   },
   {
     icon: ChartNoAxesCombined,
@@ -54,7 +46,25 @@ const tools = [
 
 function CareerToolCard({ tool }) {
   const Icon = tool.icon;
-  const action = <Button asChild={!!tool.href} variant="ghost" className="mt-[18px] flex h-[31px] w-full justify-between rounded-none border-t border-auth-border-subtle px-0 pt-3 pb-0 text-xs font-bold text-auth-orange hover:bg-transparent hover:text-auth-brand-strong">{tool.href ? <Link to={tool.href}>Dùng ngay<ArrowRight /></Link> : <>Dùng ngay<ArrowRight /></>}</Button>;
+  const action = (
+    <Button
+      asChild={!!tool.href}
+      variant="ghost"
+      className="mt-[18px] flex h-[31px] w-full justify-between rounded-none border-t border-auth-border-subtle px-0 pt-3 pb-0 text-xs font-bold text-auth-orange hover:bg-transparent hover:text-auth-brand-strong"
+    >
+      {tool.href ? (
+        <Link to={tool.href}>
+          Dùng ngay
+          <ArrowRight />
+        </Link>
+      ) : (
+        <>
+          Dùng ngay
+          <ArrowRight />
+        </>
+      )}
+    </Button>
+  );
   return (
     <Card className="flex h-[282px] gap-0 rounded-2xl border border-auth-border-card bg-white p-6 shadow-[0_1px_2px_var(--color-auth-shadow-card)] max-[1150px]:p-5 max-[950px]:h-[260px] max-[700px]:h-[285px] max-[700px]:p-4 max-[380px]:h-[255px]">
       <div className="mb-[18px] flex items-center justify-between max-[700px]:gap-[5px] [&>span:first-child]:size-12 max-[700px]:[&>span:first-child]:size-[38px]">
@@ -88,8 +98,8 @@ export function CareerTools() {
           <h2 id="tools-heading">Kho tiện ích hỗ trợ ứng viên chuẩn 2026</h2>
         </div>
         <p>
-          Các công cụ miễn phí 100% giúp bạn chủ động đo lường giá trị bản thân,
-          tính toán thu nhập và hoạch định lộ trình.
+          Các công cụ miễn phí 100% giúp bạn chủ động đo lường giá trị bản thân, tính toán thu nhập
+          và hoạch định lộ trình.
         </p>
       </div>
       <div className="grid grid-cols-4 gap-5 max-[950px]:grid-cols-2 max-[700px]:gap-3.5 max-[380px]:grid-cols-1">

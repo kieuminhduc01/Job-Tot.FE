@@ -46,7 +46,9 @@ export function Pagination({
           {pages.map((value, index) => (
             <Fragment key={value}>
               {index > 0 && value - pages[index - 1] > 1 && (
-                <span className="ui-pagination__ellipsis" aria-hidden="true">…</span>
+                <span className="ui-pagination__ellipsis" aria-hidden="true">
+                  …
+                </span>
               )}
               <button
                 type="button"

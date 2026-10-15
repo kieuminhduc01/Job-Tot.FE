@@ -23,8 +23,7 @@ import "./jobs.css";
 
 const pageSize = 6;
 const number = (value) => Number(value || 0).toLocaleString("vi-VN");
-const validId = (id) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+const validId = (id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 export function JobsPage({ savedOnly = false }) {
   return <JobDirectory savedOnly={savedOnly} />;
 }
@@ -41,14 +40,9 @@ function JobDirectory({ savedOnly }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const resultsRef = useRef(null);
   const search = params.toString();
-  const savedKey = savedOnly
-    ? savedIds.filter(validId).slice(0, 1000).join(",")
-    : "";
+  const savedKey = savedOnly ? savedIds.filter(validId).slice(0, 1000).join(",") : "";
   const requestKey = `${search}|${savedOnly}|${savedKey}`;
-  const page = Math.max(
-    1,
-    Math.min(1000000, Math.trunc(Number(params.get("page"))) || 1),
-  );
+  const page = Math.max(1, Math.min(1000000, Math.trunc(Number(params.get("page"))) || 1));
   const loading = result?.key !== requestKey;
   const legacyLocation = params.get("location");
   const normalizeProvinceName = (name) =>
@@ -59,14 +53,11 @@ function JobDirectory({ savedOnly }) {
   const legacyProvince =
     legacyLocation &&
     locations?.provinces.find(
-      (option) =>
-        normalizeProvinceName(option.name) ===
-        normalizeProvinceName(legacyLocation),
+      (option) => normalizeProvinceName(option.name) === normalizeProvinceName(legacyLocation),
     );
   const needsProvinceResolution = !!legacyLocation && !params.has("provinceId");
   const waitingForProvinceResolution =
-    needsProvinceResolution &&
-    ((!locations && !metadataError) || !!legacyProvince);
+    needsProvinceResolution && ((!locations && !metadataError) || !!legacyProvince);
 
   useEffect(() => {
     if (!needsProvinceResolution || !legacyProvince) return;
@@ -103,8 +94,7 @@ function JobDirectory({ savedOnly }) {
     const timer = setTimeout(async () => {
       if (waitingForProvinceResolution) return;
       const query = new URLSearchParams(search);
-      if (query.has("q") && !query.has("keyword"))
-        query.set("keyword", query.get("q"));
+      if (query.has("q") && !query.has("keyword")) query.set("keyword", query.get("q"));
       query.delete("q");
       query.delete("includeClosed");
       query.delete("jobIds");
@@ -120,8 +110,7 @@ function JobDirectory({ savedOnly }) {
         setError("");
         return;
       }
-      if (savedOnly)
-        savedKey.split(",").forEach((id) => query.append("jobIds", id));
+      if (savedOnly) savedKey.split(",").forEach((id) => query.append("jobIds", id));
       try {
         const data = await jobsApi.search(query, controller.signal);
         if (!controller.signal.aborted) {
@@ -139,23 +128,14 @@ function JobDirectory({ savedOnly }) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [
-    search,
-    page,
-    requestKey,
-    savedOnly,
-    savedKey,
-    attempt,
-    waitingForProvinceResolution,
-  ]);
+  }, [search, page, requestKey, savedOnly, savedKey, attempt, waitingForProvinceResolution]);
   function update(changes) {
     const next = new URLSearchParams(params);
     next.delete("page");
     for (const [key, value] of Object.entries(changes)) {
       next.delete(key);
       if (Array.isArray(value)) value.forEach((item) => next.append(key, item));
-      else if (value !== "" && value !== false && value != null)
-        next.set(key, String(value));
+      else if (value !== "" && value !== false && value != null) next.set(key, String(value));
     }
     setError("");
     setParams(next);
@@ -163,9 +143,7 @@ function JobDirectory({ savedOnly }) {
   function toggle(key, value) {
     const values = params.getAll(key);
     update({
-      [key]: values.includes(value)
-        ? values.filter((item) => item !== value)
-        : [...values, value],
+      [key]: values.includes(value) ? values.filter((item) => item !== value) : [...values, value],
     });
   }
   function checkboxGroup(key, title, options) {
@@ -189,25 +167,20 @@ function JobDirectory({ savedOnly }) {
   const totalPages = Math.ceil((result?.totalCount || 0) / pageSize);
   return (
     <div className="companies-page jobs-directory-page font-roboto">
-      <title>
-        {savedOnly ? "Việc làm đã lưu" : "Tìm việc làm mới nhất"} | Job Tốt
-      </title>
+      <title>{savedOnly ? "Việc làm đã lưu" : "Tìm việc làm mới nhất"} | Job Tốt</title>
       <AuthHeader userName={account?.fullName} loading={sessionLoading} />
       <main className="page-container">
         <section className="jobs-hero">
           <p className="jobs-ai">
             <Sparkles />
-            Job Search Engine đầu tiên do người Việt phát triển{" "}
-            <strong>· Chuẩn AI 2026</strong>
+            Job Search Engine đầu tiên do người Việt phát triển <strong>· Chuẩn AI 2026</strong>
           </p>
           <h1>
             {savedOnly ? (
               "Việc làm bạn đã lưu"
             ) : (
               <>
-                Tìm việc chuẩn xác, kết nối trực tiếp
-                {" "}
-                <br />
+                Tìm việc chuẩn xác, kết nối trực tiếp <br />
                 với{" "}
                 <Link to="/companies">
                   {metadata
@@ -262,7 +235,8 @@ function JobDirectory({ savedOnly }) {
             <MapPin />
             <span>
               ĐỊA ĐIỂM
-              <Select variant="embedded"
+              <Select
+                variant="embedded"
                 key={`${params.get("provinceId") || ""}|${!!locations}`}
                 name="provinceId"
                 aria-label="Địa điểm"
@@ -282,7 +256,8 @@ function JobDirectory({ savedOnly }) {
             <BriefcaseBusiness />
             <span>
               NGÀNH NGHỀ
-              <Select variant="embedded"
+              <Select
+                variant="embedded"
                 key={`${params.get("industryId") || ""}|${!!locations}`}
                 name="industryId"
                 aria-label="Ngành nghề"
@@ -324,9 +299,7 @@ function JobDirectory({ savedOnly }) {
                 <input
                   type="checkbox"
                   checked={params.get("verifiedOnly") === "true"}
-                  onChange={(event) =>
-                    update({ verifiedOnly: event.target.checked })
-                  }
+                  onChange={(event) => update({ verifiedOnly: event.target.checked })}
                 />
                 <span>
                   <strong>Chỉ hiển thị NTD có Job Tốt Shield</strong>
@@ -337,9 +310,7 @@ function JobDirectory({ savedOnly }) {
             {metadataError && (
               <div role="alert" className="company-error">
                 {metadataError}
-                <button onClick={() => setAttempt((value) => value + 1)}>
-                  Thử lại
-                </button>
+                <button onClick={() => setAttempt((value) => value + 1)}>Thử lại</button>
               </div>
             )}
             {!metadata && !metadataError ? (
@@ -350,10 +321,7 @@ function JobDirectory({ savedOnly }) {
               <>
                 <fieldset className="job-filter-panel">
                   <legend>Mức lương hàng tháng</legend>
-                  <button
-                    className="job-filter-reset"
-                    onClick={() => update({ salaryBand: "" })}
-                  >
+                  <button className="job-filter-reset" onClick={() => update({ salaryBand: "" })}>
                     Đặt lại
                   </button>
                   {metadata?.salaryBands.map((option) => (
@@ -374,20 +342,14 @@ function JobDirectory({ savedOnly }) {
                   "Kinh nghiệm làm việc",
                   metadata?.experienceLevels,
                 )}
-                {checkboxGroup(
-                  "positionLevels",
-                  "Cấp bậc",
-                  metadata?.positionLevels,
-                )}
+                {checkboxGroup("positionLevels", "Cấp bậc", metadata?.positionLevels)}
                 <fieldset className="job-filter-panel">
                   <legend>Hình thức làm việc</legend>
                   <div className="job-employment-options">
                     {metadata?.employmentTypes.map((option) => (
                       <button
                         key={option.value}
-                        aria-pressed={params
-                          .getAll("employmentTypes")
-                          .includes(option.value)}
+                        aria-pressed={params.getAll("employmentTypes").includes(option.value)}
                         onClick={() => toggle("employmentTypes", option.value)}
                       >
                         {option.label}
@@ -421,9 +383,7 @@ function JobDirectory({ savedOnly }) {
             {error ? (
               <div role="alert" className="company-error">
                 {error}
-                <button onClick={() => setAttempt((value) => value + 1)}>
-                  Thử lại
-                </button>
+                <button onClick={() => setAttempt((value) => value + 1)}>Thử lại</button>
               </div>
             ) : loading ? (
               <div role="status" className="job-directory-loading">
@@ -440,9 +400,7 @@ function JobDirectory({ savedOnly }) {
                       key={job.id}
                       job={job}
                       now={result.now}
-                      action={
-                        <SaveJobButton jobId={job.id} title={job.title} />
-                      }
+                      action={<SaveJobButton jobId={job.id} title={job.title} />}
                     />
                   ))}
                 </div>
@@ -475,26 +433,17 @@ function JobDirectory({ savedOnly }) {
                     Khám phá việc làm
                   </Link>
                 ) : (
-                  <button
-                    className="company-primary"
-                    onClick={() => setParams({})}
-                  >
+                  <button className="company-primary" onClick={() => setParams({})}>
                     Thiết lập lại bộ lọc
                   </button>
                 )}
               </div>
             )}
-            {!loading &&
-              !error &&
-              result.totalCount > 0 &&
-              result.items.length === 0 && (
-                <button
-                  className="company-primary"
-                  onClick={() => update({ page: 1 })}
-                >
-                  Về trang đầu
-                </button>
-              )}
+            {!loading && !error && result.totalCount > 0 && result.items.length === 0 && (
+              <button className="company-primary" onClick={() => update({ page: 1 })}>
+                Về trang đầu
+              </button>
+            )}
           </section>
         </div>
         <div className="jobs-career-resources">

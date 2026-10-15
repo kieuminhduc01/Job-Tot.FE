@@ -22,7 +22,14 @@ import { SalaryPage } from "@/pages/salary";
 import { IncomeTaxPage } from "@/pages/income-tax";
 import { UnemploymentPage } from "@/pages/unemployment";
 import { SocialInsurancePage } from "@/pages/social-insurance";
-import { CvTemplatesPage, CvTemplatePreviewPage, MyCvsPage, CvEditPage, AdminCvTemplatesPage, AdminCvEditPage } from "@/pages/cv-studio";
+import {
+  CvTemplatesPage,
+  CvTemplatePreviewPage,
+  MyCvsPage,
+  CvEditPage,
+  AdminCvTemplatesPage,
+  AdminCvEditPage,
+} from "@/pages/cv-studio";
 import { PageBreadcrumb } from "@/shared/ui/page-breadcrumb";
 
 export const router = createBrowserRouter([

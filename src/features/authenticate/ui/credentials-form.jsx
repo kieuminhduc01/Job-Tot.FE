@@ -56,10 +56,15 @@ export function CredentialsForm({ mode }) {
     submitting.current = true;
     setPending(true);
     try {
-      const emailVerificationToken = register ? await emailFlow.prepareRegistration(values.identity) : null;
-      if (register && !emailVerificationToken) { setMessage("Kiểm tra email và nhập mã xác thực để tiếp tục."); return; }
+      const emailVerificationToken = register
+        ? await emailFlow.prepareRegistration(values.identity)
+        : null;
+      if (register && !emailVerificationToken) {
+        setMessage("Kiểm tra email và nhập mã xác thực để tiếp tục.");
+        return;
+      }
       const newPassword = !register ? await emailFlow.changeTemporary() : null;
-      if (newPassword) setValues(current => ({ ...current, password: newPassword }));
+      if (newPassword) setValues((current) => ({ ...current, password: newPassword }));
       const body = {
         emailOrPhone: values.identity.trim(),
         password: newPassword || values.password,
@@ -85,11 +90,7 @@ export function CredentialsForm({ mode }) {
     }
   }
   return (
-    <form
-      noValidate
-      onSubmit={submit}
-      className={`grid mt-3 gap-3 border-b pb-6 max-[700px]:mb-0`}
-    >
+    <form noValidate onSubmit={submit} className={`grid mt-3 gap-3 border-b pb-6 max-[700px]:mb-0`}>
       {register && (
         <AuthField
           name="fullName"
@@ -110,9 +111,7 @@ export function CredentialsForm({ mode }) {
       />
       <div
         className={
-          register
-            ? "grid grid-cols-2 gap-4 max-[950px]:grid-cols-1 max-[950px]:gap-3"
-            : undefined
+          register ? "grid grid-cols-2 gap-4 max-[950px]:grid-cols-1 max-[950px]:gap-3" : undefined
         }
       >
         <AuthField
@@ -159,11 +158,7 @@ export function CredentialsForm({ mode }) {
         disabled={pending}
         className={`w-full gap-[7px] border-0 bg-auth-orange text-base font-bold text-white hover:bg-auth-brand-hover max-[950px]:text-sm [&_svg]:size-[19px] ${register ? "-mt-1 h-[52px] rounded-xl" : "mt-0 h-12 rounded-lg"}`}
       >
-        {pending
-          ? "Đang xử lý…"
-          : register
-            ? "Đăng ký tài khoản miễn phí"
-            : "Đăng nhập ngay"}
+        {pending ? "Đang xử lý…" : register ? "Đăng ký tài khoản miễn phí" : "Đăng nhập ngay"}
         <ArrowRight />
       </Button>
       {message && (

@@ -15,7 +15,11 @@ import { HeaderDataProvider } from "@/widgets/auth-header";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <SessionProvider>
-      <EmployerSessionProvider><HeaderDataProvider><CandidateApp /></HeaderDataProvider></EmployerSessionProvider>
+      <EmployerSessionProvider>
+        <HeaderDataProvider>
+          <CandidateApp />
+        </HeaderDataProvider>
+      </EmployerSessionProvider>
     </SessionProvider>
   </StrictMode>,
 );

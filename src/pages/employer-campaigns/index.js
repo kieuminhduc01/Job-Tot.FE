@@ -1,1 +1,1 @@
-export { CampaignListPage, CampaignEditPage } from './ui/campaign-pages';
+export { CampaignListPage, CampaignEditPage } from "./ui/campaign-pages";

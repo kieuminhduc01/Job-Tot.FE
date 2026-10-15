@@ -1,1 +1,1 @@
-export { MessagesPage } from './ui/messages-page';
+export { MessagesPage } from "./ui/messages-page";

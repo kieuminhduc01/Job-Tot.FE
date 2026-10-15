@@ -21,9 +21,7 @@ async function request(path, options = {}, authenticated = false) {
     const error = new Error(
       response.status >= 500 && !data?.detail
         ? "Máy chủ đang gặp sự cố. Vui lòng thử lại sau."
-        : data?.detail ||
-            fallback[response.status] ||
-            "Yêu cầu không thành công.",
+        : data?.detail || fallback[response.status] || "Yêu cầu không thành công.",
     );
     error.status = response.status;
     error.changeToken = data?.changeToken;
@@ -56,21 +54,21 @@ async function authenticate(path, values) {
 }
 
 export const employerAuth = {
-  requestEmailCode: email => post("/email/request", { email }),
-  verifyEmailCode: values => post("/email/verify", values),
-  changeTemporaryPassword: values => post("/email/change-temporary-password", values),
-  me: signal => request("/me", { signal }, true),
-  provinces: signal => request("/provinces", { signal }),
-  login: values => authenticate("/login", values),
-  register: values => authenticate("/register", values),
+  requestEmailCode: (email) => post("/email/request", { email }),
+  verifyEmailCode: (values) => post("/email/verify", values),
+  changeTemporaryPassword: (values) => post("/email/change-temporary-password", values),
+  me: (signal) => request("/me", { signal }, true),
+  provinces: (signal) => request("/provinces", { signal }),
+  login: (values) => authenticate("/login", values),
+  register: (values) => authenticate("/register", values),
   logout: async () => {
     const tokens = readTokens();
     // Clearing first prevents in-flight requests from restoring a logged-out session.
     clearTokens();
     if (tokens) await post("/logout", { refreshToken: tokens.refreshToken });
   },
-  forgotPassword: email => post("/forgot-password", { email }),
-  resetPassword: async values => {
+  forgotPassword: (email) => post("/forgot-password", { email }),
+  resetPassword: async (values) => {
     const result = await post("/reset-password", values);
     clearTokens();
     return result;

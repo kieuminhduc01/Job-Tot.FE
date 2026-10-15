@@ -2,8 +2,13 @@ export function formatJobSalary(job) {
   if (job.salaryMin == null && job.salaryMax == null) return "Lương thỏa thuận";
   const monthly = (job.salaryPeriod || "monthly") === "monthly";
   const unit = monthly ? " triệu/tháng" : job.salaryPeriod === "hourly" ? " đ/giờ" : " đ/ngày";
-  const format = value => Number(monthly ? value / 1000000 : value).toLocaleString("vi-VN");
-  const salary = job.salaryMin != null && job.salaryMax != null ? `${format(job.salaryMin)} – ${format(job.salaryMax)}` : job.salaryMin != null ? `Từ ${format(job.salaryMin)}` : `Đến ${format(job.salaryMax)}`;
+  const format = (value) => Number(monthly ? value / 1000000 : value).toLocaleString("vi-VN");
+  const salary =
+    job.salaryMin != null && job.salaryMax != null
+      ? `${format(job.salaryMin)} – ${format(job.salaryMax)}`
+      : job.salaryMin != null
+        ? `Từ ${format(job.salaryMin)}`
+        : `Đến ${format(job.salaryMax)}`;
   return `${salary}${unit}${job.salaryNote ? ` + ${job.salaryNote}` : ""}`;
 }
 export function postedAgo(createdAt, now) {

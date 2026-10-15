@@ -25,15 +25,15 @@ export function AuthFooter() {
           <section className="max-[950px]:col-span-full max-[950px]:max-w-[520px] [&>p]:mb-6 [&>p]:text-base [&>p]:leading-[19px] [&_address]:grid [&_address]:gap-2.5 [&_address]:text-base [&_address]:leading-[17px] [&_address]:not-italic [&_address>*]:flex [&_address>*]:items-start [&_address>*]:gap-2 [&_address_strong]:-ml-[5px] [&_address_strong]:font-semibold [&_address_strong]:text-auth-text-footer-link [&_address_svg]:size-4 [&_address_svg]:text-auth-orange">
             <BrandLogo footer />
             <p>
-              Công ty Cổ phần Job Tốt Toàn Cầu – Nền tảng tuyển dụng thông minh
-              tích hợp trí tuệ nhân tạo (AI) giúp tối ưu hóa hành trình phát
-              triển sự nghiệp của người lao động Việt Nam.
+              Công ty Cổ phần Job Tốt Toàn Cầu – Nền tảng tuyển dụng thông minh tích hợp trí tuệ
+              nhân tạo (AI) giúp tối ưu hóa hành trình phát triển sự nghiệp của người lao động Việt
+              Nam.
             </p>
             <address>
               <span>
                 <MapPin />
-                Tầng 12, Tòa nhà Sông Đà, Đường Phạm Hùng, Phường Mỹ Đình 1,
-                Quận Nam Từ Liêm, Hà Nội
+                Tầng 12, Tòa nhà Sông Đà, Đường Phạm Hùng, Phường Mỹ Đình 1, Quận Nam Từ Liêm, Hà
+                Nội
               </span>
               <a href="tel:0356520207">
                 <Phone />
@@ -56,11 +56,17 @@ export function AuthFooter() {
           </section>
           <section>
             <h2>Dành cho Nhà tuyển dụng</h2>
-            {employerLinks.map((label) => (
-              label === "Tìm hồ sơ ứng viên chuẩn AI" ? <Link key={label} to="/employer/discover">Tìm hồ sơ ứng viên</Link> : <ServiceNotice key={label} title={label}>
-                <button>{label}</button>
-              </ServiceNotice>
-            ))}
+            {employerLinks.map((label) =>
+              label === "Tìm hồ sơ ứng viên chuẩn AI" ? (
+                <Link key={label} to="/employer/discover">
+                  Tìm hồ sơ ứng viên
+                </Link>
+              ) : (
+                <ServiceNotice key={label} title={label}>
+                  <button>{label}</button>
+                </ServiceNotice>
+              ),
+            )}
           </section>
         </div>
         <div className="mt-[50px] border-t border-auth-border-footer pt-7 text-xs font-semibold max-[700px]:mt-8">

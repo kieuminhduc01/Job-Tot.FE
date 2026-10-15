@@ -7,7 +7,9 @@ async function decode(response) {
   if (response.status === 204) return null;
   const data = await readResponseJson(response);
   if (!response.ok) {
-    const error = new Error(data?.detail || "Không thể tải dữ liệu doanh nghiệp. Vui lòng thử lại.");
+    const error = new Error(
+      data?.detail || "Không thể tải dữ liệu doanh nghiệp. Vui lòng thử lại.",
+    );
     error.status = response.status;
     throw error;
   }
@@ -30,9 +32,15 @@ export const companiesApi = {
     return result.items[0];
   },
   list: (params, signal) => get(`companies?${params}`, signal),
-  metadata: signal => get("companies/filters", signal),
-  featured: signal => get("companies/featured", signal),
-  jobs: (id, page, signal) => get(`jobs?companyId=${encodeURIComponent(id)}&page=${page}&pageSize=10`, signal),
-  followed: async signal => decode(await candidateFetch("followed-companies", { signal })),
-  follow: async (id, followed) => decode(await candidateFetch(`followed-companies/${encodeURIComponent(id)}`, { method: followed ? "PUT" : "DELETE" })),
+  metadata: (signal) => get("companies/filters", signal),
+  featured: (signal) => get("companies/featured", signal),
+  jobs: (id, page, signal) =>
+    get(`jobs?companyId=${encodeURIComponent(id)}&page=${page}&pageSize=10`, signal),
+  followed: async (signal) => decode(await candidateFetch("followed-companies", { signal })),
+  follow: async (id, followed) =>
+    decode(
+      await candidateFetch(`followed-companies/${encodeURIComponent(id)}`, {
+        method: followed ? "PUT" : "DELETE",
+      }),
+    ),
 };

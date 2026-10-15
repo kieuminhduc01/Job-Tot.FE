@@ -28,9 +28,7 @@ export function ForgotPasswordDialog({ role = "candidate" }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Khôi phục mật khẩu</DialogTitle>
-          <DialogDescription>
-            Nhập email liên kết với tài khoản của bạn.
-          </DialogDescription>
+          <DialogDescription>Nhập email liên kết với tài khoản của bạn.</DialogDescription>
         </DialogHeader>
         <form
           className="grid gap-4"
@@ -42,7 +40,9 @@ export function ForgotPasswordDialog({ role = "candidate" }) {
             setPending(true);
             setMessage("");
             try {
-              const result = await (role === "employer" ? employerAuth : candidateAuth).forgotPassword(email.trim());
+              const result = await (
+                role === "employer" ? employerAuth : candidateAuth
+              ).forgotPassword(email.trim());
               setMessage(result.message);
             } catch (failure) {
               setMessage(failure.message);
@@ -63,7 +63,11 @@ export function ForgotPasswordDialog({ role = "candidate" }) {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="email@example.com"
           />
-          <Button type="submit" disabled={pending} className="border-0 bg-auth-orange text-white hover:bg-auth-brand-hover">
+          <Button
+            type="submit"
+            disabled={pending}
+            className="border-0 bg-auth-orange text-white hover:bg-auth-brand-hover"
+          >
             {pending ? "Đang gửi…" : "Gửi yêu cầu khôi phục"}
           </Button>
           {message && (

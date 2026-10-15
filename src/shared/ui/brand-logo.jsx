@@ -25,9 +25,7 @@ export function BrandLogo({ footer = false }) {
           className={`flex items-baseline leading-[23px] tracking-[-0.7px] ${footer ? "text-xl font-bold" : "text-xl font-extrabold max-[700px]:text-lg max-[380px]:text-base"}`}
         >
           Job
-          <span className={`text-auth-orange ${footer ? "" : "ml-[3px]"}`}>
-            Tốt
-          </span>
+          <span className={`text-auth-orange ${footer ? "" : "ml-[3px]"}`}>Tốt</span>
           {!footer && (
             <i className="ml-[5px] size-[7px] self-center rounded-full bg-auth-success-indicator" />
           )}

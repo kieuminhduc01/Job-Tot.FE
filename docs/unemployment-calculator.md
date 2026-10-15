@@ -11,6 +11,7 @@ Mức tháng = min(60% × bình quân, 5 × tối thiểu vùng). Vùng I/II/III
 Khác ảnh tham khảo: không dùng mốc 15 ngày chờ, 90 ngày thay 3 tháng hoặc hướng dẫn quyết định trong 20 ngày cũ. Năm 2026 thời điểm hưởng từ ngày làm việc thứ 11; giải quyết trong 15 ngày làm việc từ nhận đủ hồ sơ. Không tính thuế TNCN vào trợ cấp, không cộng hỗ trợ học nghề vào tổng dự kiến. Không tự tính thời gian bảo lưu vì còn phụ thuộc quá trình đóng và quyết định hưởng.
 
 Nguồn:
+
 - [Luật Việc làm 74/2025/QH15, Điều 38–40](https://xaydungchinhsach.chinhphu.vn/toan-van-luat-viec-lam-119250711173403835.htm)
 - [Nghị định 374/2025/NĐ-CP, hiệu lực 01/01/2026](https://vanban.chinhphu.vn/?classid=1&docid=216493&pageid=27160&typegroupid=4)
 - [Mức hưởng và trần hưởng](https://xaydungchinhsach.chinhphu.vn/quy-dinh-muc-huong-tro-cap-that-nghiep-hang-thang-cua-nguoi-lao-dong-119260108103733284.htm)

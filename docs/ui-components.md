@@ -16,7 +16,11 @@ and option groups work normally. Pass children or an `options` array of
 ```jsx
 <Select name="provinceId" value={provinceId} onChange={handleChange} aria-label="Địa điểm">
   <option value="">Tất cả địa điểm</option>
-  {provinces.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+  {provinces.map((item) => (
+    <option key={item.id} value={item.id}>
+      {item.name}
+    </option>
+  ))}
 </Select>
 ```
 
@@ -39,7 +43,12 @@ row rendering on the page. Use native `thead`, `tbody`, `tr`, `th` and `td`, wit
 ```jsx
 <TableScroll label="Danh sách chiến dịch">
   <Table aria-label="Danh sách chiến dịch">
-    <thead><tr><th scope="col">Chiến dịch</th><th scope="col">Trạng thái</th></tr></thead>
+    <thead>
+      <tr>
+        <th scope="col">Chiến dịch</th>
+        <th scope="col">Trạng thái</th>
+      </tr>
+    </thead>
     <tbody>{/* Business rows */}</tbody>
   </Table>
 </TableScroll>

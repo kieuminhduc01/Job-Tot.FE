@@ -16,15 +16,15 @@ export function SaveJobButton({ jobId, title }) {
       disabled={savedLoading || !!savedError || pendingIds.includes(jobId)}
       title={savedError || undefined}
       onClick={async () => {
-        try { const next = await toggleSaved(jobId); if (next !== null) notify(next ? `Đã lưu ${title}.` : `Đã bỏ lưu ${title}.`); }
-        catch (failure) { notify(failure.message, { type: "error" }); }
+        try {
+          const next = await toggleSaved(jobId);
+          if (next !== null) notify(next ? `Đã lưu ${title}.` : `Đã bỏ lưu ${title}.`);
+        } catch (failure) {
+          notify(failure.message, { type: "error" });
+        }
       }}
     >
-      <Bookmark
-        className={
-          saved ? "fill-emerald-600 text-emerald-600" : "text-muted-foreground"
-        }
-      />
+      <Bookmark className={saved ? "fill-emerald-600 text-emerald-600" : "text-muted-foreground"} />
     </Button>
   );
 }
