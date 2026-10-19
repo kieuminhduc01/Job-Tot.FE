@@ -248,6 +248,14 @@
   background: #fff;
   flex-shrink: 0;
 }
+.page-container .company-follow.is-followed {
+  color: var(--ui-brand);
+  border-color: var(--ui-brand);
+  background: #fff7f4;
+}
+.page-container .company-follow.is-followed:hover {
+  background: #ffede7;
+}
 .page-container .job-listing-tags > span {
   font-size: 12px;
   padding: 4px 8px;
